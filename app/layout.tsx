@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans, Source_Serif_4 } from "next/font/google";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { site } from "@/lib/site";
+import { JsonLd } from "@/components/JsonLd";
+import { graph, organizationSchema, websiteSchema } from "@/lib/schema";
+import { site, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const plex = IBM_Plex_Sans({
@@ -21,7 +23,10 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://example.com"), // replace with site.url once the domain is live
+  // Drives every absolute URL Next generates — canonicals, og:image, twitter:image.
+  // Sourced from site.ts so the domain is stated in exactly one place.
+  metadataBase: new URL(siteUrl),
+  alternates: { canonical: "/" },
   title: {
     default: `${site.name} — ${site.tagline}`,
     template: `%s | ${site.shortName}`,
@@ -37,11 +42,22 @@ export const metadata: Metadata = {
     "raw cashew nuts",
     "M/W Global Services Limited",
   ],
+  // og:image and twitter:image are supplied by the opengraph-image.jpg /
+  // twitter-image.jpg files in this directory, with their .alt.txt companions.
   openGraph: {
     title: `${site.name} — ${site.tagline}`,
     description: site.description,
     siteName: site.name,
     type: "website",
+    locale: "en_NG",
+    // No `url` here on purpose: it would be inherited verbatim by every child
+    // page, pointing all of them at the homepage. The per-page
+    // `alternates.canonical` carries that signal correctly instead.
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${site.name} — ${site.tagline}`,
+    description: site.description,
   },
   robots: { index: true, follow: true },
 };
@@ -65,6 +81,8 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        {/* Company identity for search engines — see lib/schema.ts. */}
+        <JsonLd data={graph(organizationSchema, websiteSchema)} />
       </body>
     </html>
   );

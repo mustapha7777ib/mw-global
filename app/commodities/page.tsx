@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   title: "Commodities",
   description:
     "Agricultural commodities, solid minerals and imported industrial goods traded by M/W Global Services Limited, with indicative specifications.",
+  alternates: { canonical: "/commodities" },
 };
 
 function slugify(value: string) {

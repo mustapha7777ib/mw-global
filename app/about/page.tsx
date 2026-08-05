@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: "About Us",
   description:
     "M/W Global Services Limited is an international trade company handling commodity export, mineral trading, general goods import and freight logistics.",
+  alternates: { canonical: "/about" },
 };
 
 const values = [

@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import { Container, Label, PageHeader } from "@/components/ui";
 import { QuoteForm } from "@/components/QuoteForm";
+import { JsonLd } from "@/components/JsonLd";
+import { graph, localBusinessSchema } from "@/lib/schema";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact",
   description:
     "Contact M/W Global Services Limited — request a quote for commodity export, mineral sourcing, goods import, freight forwarding or customs clearing.",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {
@@ -17,6 +20,8 @@ export default function ContactPage() {
 
   return (
     <>
+      {/* The physical Abuja office — address and hours match what is rendered below. */}
+      <JsonLd data={graph(localBusinessSchema)} />
       <PageHeader
         label="Contact"
         title="Let's talk about what you need moved"

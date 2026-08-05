@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: "Services",
   description:
     "Agricultural commodity export, solid minerals trading, general goods import, and freight forwarding with licensed customs clearing.",
+  alternates: { canonical: "/services" },
 };
 
 export default function ServicesPage() {

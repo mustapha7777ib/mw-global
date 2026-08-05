@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!--
+    Browser-tab / search-result icon. Deliberately simplified from public/logo.svg:
+    the 3.5px inner keyline and the GSL bar both collapse into noise at 16-32px,
+    so this variant drops them and thickens the diamonds to stay legible tiny.
+  -->
+  <rect width="100" height="100" fill="#15653e"/>
+  <path d="M36 22 63 50 36 78 9 50Z" stroke="#ffffff" stroke-width="7" fill="none" stroke-linejoin="miter"/>
+  <path d="M64 22 91 50 64 78 37 50Z" stroke="#ffffff" stroke-width="7" fill="none" stroke-linejoin="miter"/>
+</svg>

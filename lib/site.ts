@@ -5,29 +5,42 @@
  * with the real value and it updates everywhere on the site at once.
  */
 
+/** Structured office address — hoisted so `site.office.lines` can derive from it. */
+const postal = {
+  street: "2 Emeritus Umaru Shehu Ave",
+  locality: "Abuja",
+  postalCode: "900108",
+  region: "Federal Capital Territory",
+  country: "NG", // ISO 3166-1 alpha-2
+} as const;
+
 export const site = {
   name: "M/W Global Services Limited",
   shortName: "M/W Global",
   tagline: "Import • Export • Logistics",
   description:
     "M/W Global Services Limited is an international trade company sourcing and shipping agricultural commodities, solid minerals and industrial goods between Africa and world markets.",
-  url: "https://[YOUR-DOMAIN].com",
+  url: "https://mwglobal.org.ng",
 
   founded: "[2008]",
 
   // ── Contact ─────────────────────────────────────────────────────────────
   email: "[info@mwglobal.org.ng]",
-  salesEmail: "[trade@yourdomain.com]",
+  salesEmail: "[info@mwglobal.org.ng]",
   phone: "+234 905 617 1492",
   whatsapp: "2349056171492", // digits only, country code first
   hours: "24/7",
 
   // ── Office ──────────────────────────────────────────────────────────────
+  // `postal` is the structured form, used for the LocalBusiness schema that
+  // search engines read. `lines` is derived from it so the address a visitor
+  // sees and the address Google indexes can never disagree.
   office: {
     label: "Office",
+    postal,
     lines: [
-      "2 Emeritus Umaru Shehu Ave",
-      "Abuja 900108, Federal Capital Territory",
+      postal.street,
+      `${postal.locality} ${postal.postalCode}, ${postal.region}`,
     ],
   },
 
@@ -38,6 +51,36 @@ export const site = {
     x: "[https://x.com/yourhandle]",
   },
 } as const;
+
+/**
+ * Absolute origin, no trailing slash. Set NEXT_PUBLIC_SITE_URL in the hosting
+ * environment to point a preview or staging deploy somewhere else without
+ * editing code — otherwise this falls back to `site.url` above.
+ */
+export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || site.url).replace(
+  /\/+$/,
+  "",
+);
+
+/** Turn a site-relative path into a full URL, for metadata and structured data. */
+export function absolute(path: string): string {
+  return new URL(path, siteUrl).toString();
+}
+
+/**
+ * Returns the value with its [BRACKETS] stripped, or `undefined` if it is still
+ * an unfilled placeholder.
+ *
+ * Structured data is worse than absent when it is wrong — a fake email or a
+ * dead social profile handed to Google undermines the whole entity. So the
+ * schema drops anything unconfirmed rather than publishing a guess.
+ */
+const UNFILLED = /YOUR-DOMAIN|yourdomain|yourhandle|your-company/i;
+
+export function confirmed(value: string | undefined): string | undefined {
+  const cleaned = value?.replace(/[[\]]/g, "").trim();
+  return !cleaned || UNFILLED.test(cleaned) ? undefined : cleaned;
+}
 
 export const nav = [
   { href: "/", label: "Home" },

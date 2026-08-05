@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Logo } from "@/components/Logo";
 import { Container } from "@/components/ui";
-import { nav, site } from "@/lib/site";
+import { contact, nav, site } from "@/lib/site";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -140,12 +140,14 @@ export function Navbar() {
               Request a Quote
             </Link>
             <div className="mt-5 pb-2 text-[0.85rem] text-ink-500">
-              <a className="block py-1" href={`tel:${site.phone.replace(/[^\d+]/g, "")}`}>
+              <a className="block py-1" href={contact.telHref}>
                 {site.phone}
               </a>
-              <a className="block py-1" href={`mailto:${site.email.replace(/[[\]]/g, "")}`}>
-                {site.email}
-              </a>
+              {contact.email ? (
+                <a className="block py-1" href={`mailto:${contact.email}`}>
+                  {contact.email}
+                </a>
+              ) : null}
             </div>
           </Container>
         </div>

@@ -10,7 +10,10 @@ import {
   SectionHeading,
 } from "@/components/ui";
 import { processSteps, services } from "@/lib/content";
-import { site } from "@/lib/site";
+import { contact } from "@/lib/site";
+
+/** Falls back to the general address so the CTA never points at a dead mailbox. */
+const tradeDeskEmail = contact.salesEmail ?? contact.email;
 
 export const metadata: Metadata = {
   title: "Services",
@@ -152,12 +155,11 @@ export default function ServicesPage() {
         <Button href="/contact#quote" variant="light">
           Start a conversation <ArrowRight />
         </Button>
-        <Button
-          href={`mailto:${site.salesEmail.replace(/[[\]]/g, "")}`}
-          variant="quiet"
-        >
-          Email the trade desk
-        </Button>
+        {tradeDeskEmail ? (
+          <Button href={`mailto:${tradeDeskEmail}`} variant="quiet">
+            Email the trade desk
+          </Button>
+        ) : null}
       </CtaBand>
     </>
   );

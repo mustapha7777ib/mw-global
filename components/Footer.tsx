@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LogoMark } from "@/components/Logo";
 import { Container } from "@/components/ui";
-import { nav, site } from "@/lib/site";
+import { contact, nav, site } from "@/lib/site";
 import { services } from "@/lib/content";
 
 const year = new Date().getFullYear();
@@ -66,14 +66,16 @@ export function Footer() {
                 ))}
               </li>
               <li>
+                {contact.email ? (
+                  <a
+                    href={`mailto:${contact.email}`}
+                    className="block transition-colors hover:text-white"
+                  >
+                    {contact.email}
+                  </a>
+                ) : null}
                 <a
-                  href={`mailto:${site.email.replace(/[[\]]/g, "")}`}
-                  className="block transition-colors hover:text-white"
-                >
-                  {site.email}
-                </a>
-                <a
-                  href={`tel:${site.phone.replace(/[^\d+]/g, "")}`}
+                  href={contact.telHref}
                   className="block transition-colors hover:text-white"
                 >
                   {site.phone}
@@ -87,12 +89,11 @@ export function Footer() {
           <p>
             © {year} {site.name}. All rights reserved.
           </p>
-          <a
-            href={`mailto:${site.email.replace(/[[\]]/g, "")}`}
-            className="hover:text-white"
-          >
-            {site.email}
-          </a>
+          {contact.email ? (
+            <a href={`mailto:${contact.email}`} className="hover:text-white">
+              {contact.email}
+            </a>
+          ) : null}
         </div>
       </Container>
     </footer>

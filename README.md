@@ -50,35 +50,35 @@ automatically — change it in one place and the map follows.
   is a one-line change.
 - **[`lib/site.ts`](lib/site.ts)** — company facts and navigation.
 
-## Making the quote form actually deliver
+## The quote form
 
-[`app/api/quote/route.ts`](app/api/quote/route.ts) validates submissions and
-currently **logs them to the server console** — nothing is emailed or stored
-yet. The file header comments show three ways to wire it up. The quickest:
+[`app/api/quote/route.ts`](app/api/quote/route.ts) emails each enquiry to the
+trade desk via [Resend](https://resend.com), with `reply-to` set to the
+enquirer so a reply from the inbox reaches them directly.
 
-```bash
-npm i resend
-```
+**Two things are needed before it works on the live site:**
 
-```ts
-// in app/api/quote/route.ts, replacing the console.log
-import { Resend } from "resend";
+1. **Set `RESEND_API_KEY`** — create one at <https://resend.com/api-keys>, then
+   add it to `.env.local` locally and to Netlify under *Site settings →
+   Environment variables*. See [`.env.example`](.env.example).
+2. **Verify the sending domain in Resend.** The `from` address defaults to
+   `enquiries@mwglobal.org.ng`, and Resend rejects it until `mwglobal.org.ng`
+   is verified by adding the DNS records it gives you. To send before the
+   domain is ready, set `QUOTE_FROM_EMAIL` to a Resend-provided test address —
+   replies still work, because `reply-to` is the enquirer's own address.
 
-await new Resend(process.env.RESEND_API_KEY).emails.send({
-  from: "site@yourdomain.com",
-  to: "trade@yourdomain.com",
-  subject: `Quote enquiry — ${enquiry.name}`,
-  text: JSON.stringify(enquiry, null, 2),
-});
-```
+Destination and sender can be overridden with `QUOTE_TO_EMAIL` and
+`QUOTE_FROM_EMAIL`; both otherwise come from [`lib/site.ts`](lib/site.ts).
 
-Then set `RESEND_API_KEY` in `.env.local` (and in your host's environment
-variables). Until this is done, enquiries submitted on the live site are lost —
-wire it up before launch.
+**If delivery fails, the route never reports success.** It returns an error and
+the form tells the visitor to phone or email instead — a false "Enquiry
+received" loses a real customer. The enquiry is also written to the function
+logs on failure, so it can be recovered. Watch for this after launch: an
+unverified domain is the most likely cause, and it surfaces as a `502`.
 
-The form already includes a honeypot field that silently absorbs bot
-submissions, plus server-side validation of name, email format and message
-length.
+The form also includes a honeypot field that silently absorbs bot submissions,
+plus server-side validation of name, email format and message length, and the
+enquiry is HTML-escaped before it goes into the email body.
 
 ## Pages
 
@@ -191,16 +191,17 @@ a runtime incompatibility, that is the likely cause, and Vercel is the fallback.
 
 ### Environment variables
 
-Set these in the host's dashboard (not in the repo) once the quote form is
-wired up — e.g. `RESEND_API_KEY`.
+Set these in the host's dashboard, never in the repo. `RESEND_API_KEY` is the
+only required one; see [`.env.example`](.env.example) for the full list.
 
 ## Before launch
 
-- [ ] Replace every `[PLACEHOLDER]` (start with `lib/site.ts`)
-- [ ] Wire the quote form to email or a database
-- [ ] Set `metadataBase` in `app/layout.tsx` to the live domain
+- [ ] Replace every remaining `[PLACEHOLDER]` (the social links in `lib/site.ts`)
+- [ ] Set `RESEND_API_KEY` and verify the sending domain in Resend
+- [ ] Submit a test enquiry on the live site and confirm it arrives
+- [ ] Submit the sitemap in Google Search Console
+- [ ] Create a Google Business Profile for the Abuja office
 - [ ] Swap the stock photography for images of your own operations
 - [ ] Drop in the original logo artwork in place of the SVG recreation
-- [ ] Add a favicon (`app/icon.png`) and an OG share image (`app/opengraph-image.png`)
 - [ ] Trim the commodity lists to what you can actually supply — they are broad by default
 # mw-global

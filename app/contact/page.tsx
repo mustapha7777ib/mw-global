@@ -3,7 +3,7 @@ import { Container, Label, PageHeader } from "@/components/ui";
 import { QuoteForm } from "@/components/QuoteForm";
 import { JsonLd } from "@/components/JsonLd";
 import { graph, localBusinessSchema } from "@/lib/schema";
-import { site } from "@/lib/site";
+import { contact, hasDistinctSalesEmail, site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -13,9 +13,6 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
-  const telHref = `tel:${site.phone.replace(/[^\d+]/g, "")}`;
-  const mailHref = `mailto:${site.email.replace(/[[\]]/g, "")}`;
-  const waHref = `https://wa.me/${site.whatsapp.replace(/[^\d]/g, "")}`;
   const address = site.office.lines.join(", ");
 
   return (
@@ -41,7 +38,7 @@ export default function ContactPage() {
                   <dt className="text-[0.82rem] text-ink-500">Phone</dt>
                   <dd className="mt-1.5">
                     <a
-                      href={telHref}
+                      href={contact.telHref}
                       className="display block text-[1.15rem] text-ink-900 hover:text-brand-700"
                     >
                       {site.phone}
@@ -52,18 +49,24 @@ export default function ContactPage() {
                 <div className="border-b border-ink-900/10 py-5">
                   <dt className="text-[0.82rem] text-ink-500">Email</dt>
                   <dd className="mt-1.5">
-                    <a
-                      href={mailHref}
-                      className="display block text-[1.15rem] text-ink-900 hover:text-brand-700"
-                    >
-                      {site.email}
-                    </a>
-                    <a
-                      href={`mailto:${site.salesEmail.replace(/[[\]]/g, "")}`}
-                      className="text-[0.9rem] text-ink-500 hover:text-brand-700"
-                    >
-                      {site.salesEmail} — trade desk
-                    </a>
+                    {contact.email ? (
+                      <a
+                        href={`mailto:${contact.email}`}
+                        className="display block text-[1.15rem] text-ink-900 hover:text-brand-700"
+                      >
+                        {contact.email}
+                      </a>
+                    ) : null}
+                    {/* Only a second line when the trade desk is genuinely a
+                        different address — otherwise it reads as a mistake. */}
+                    {hasDistinctSalesEmail ? (
+                      <a
+                        href={`mailto:${contact.salesEmail}`}
+                        className="text-[0.9rem] text-ink-500 hover:text-brand-700"
+                      >
+                        {contact.salesEmail} — trade desk
+                      </a>
+                    ) : null}
                   </dd>
                 </div>
 
@@ -94,7 +97,7 @@ export default function ContactPage() {
               </dl>
 
               <a
-                href={waHref}
+                href={contact.whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-8 inline-flex items-center justify-center border border-ink-900/25 px-6 py-3.5 text-[0.9rem] font-semibold text-ink-900 transition-colors hover:border-ink-900 hover:bg-ink-900 hover:text-white"

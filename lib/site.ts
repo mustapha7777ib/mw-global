@@ -22,11 +22,10 @@ export const site = {
     "M/W Global Services Limited is an international trade company sourcing and shipping agricultural commodities, solid minerals and industrial goods between Africa and world markets.",
   url: "https://mwglobal.org.ng",
 
-  founded: "[2008]",
 
   // ── Contact ─────────────────────────────────────────────────────────────
-  email: "[info@mwglobal.org.ng]",
-  salesEmail: "[info@mwglobal.org.ng]",
+  email: "info@mwglobal.org.ng",
+  salesEmail: "info@mwglobal.org.ng",
   phone: "+234 905 617 1492",
   whatsapp: "2349056171492", // digits only, country code first
   hours: "24/7",
@@ -81,6 +80,26 @@ export function confirmed(value: string | undefined): string | undefined {
   const cleaned = value?.replace(/[[\]]/g, "").trim();
   return !cleaned || UNFILLED.test(cleaned) ? undefined : cleaned;
 }
+
+/**
+ * Display-ready contact details.
+ *
+ * Render these, never `site.email` / `site.salesEmail` directly — those still
+ * carry their [BRACKETS], which is a fine authoring convention but was ending
+ * up verbatim on the page. A value that is still an unfilled placeholder comes
+ * back `undefined` so the caller can omit the link rather than publish a dead
+ * mailto.
+ */
+export const contact = {
+  email: confirmed(site.email),
+  salesEmail: confirmed(site.salesEmail),
+  telHref: `tel:${site.phone.replace(/[^\d+]/g, "")}`,
+  whatsappHref: `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`,
+};
+
+/** Whether the trade-desk address is worth showing as a separate contact. */
+export const hasDistinctSalesEmail =
+  Boolean(contact.salesEmail) && contact.salesEmail !== contact.email;
 
 export const nav = [
   { href: "/", label: "Home" },

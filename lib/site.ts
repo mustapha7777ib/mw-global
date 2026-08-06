@@ -49,6 +49,17 @@ export const site = {
     instagram: "[https://instagram.com/yourhandle]",
     x: "[https://x.com/yourhandle]",
   },
+
+  // ── Downloadable catalogue ─────────────────────────────────────────────
+  // Regenerating the PDF? Keep this in step — pages/size drive the copy on
+  // the /catalogue page and the homepage download banner.
+  catalogue: {
+    href: "/downloads/mw-global-catalogue-2026.pdf",
+    label: "Product & Commodity Catalogue — 2026",
+    year: "2026",
+    pages: 14,
+    fileSize: "0.5 MB",
+  },
 } as const;
 
 /**
@@ -106,5 +117,6 @@ export const nav = [
   { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
   { href: "/commodities", label: "Commodities" },
+  { href: "/catalogue", label: "Catalogue" },
   { href: "/contact", label: "Contact" },
 ] as const;

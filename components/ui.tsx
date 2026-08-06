@@ -76,6 +76,9 @@ type ButtonProps = {
   children: ReactNode;
   variant?: "solid" | "outline" | "light" | "quiet";
   className?: string;
+  /** File name to save as. Forces a plain `<a>` so the browser downloads the
+   * file instead of Next's router trying to client-side-navigate to it. */
+  download?: string;
 };
 
 export function Button({
@@ -83,6 +86,7 @@ export function Button({
   children,
   variant = "solid",
   className = "",
+  download,
 }: ButtonProps) {
   const base =
     "inline-flex items-center justify-center gap-2.5 px-7 py-3.5 text-[0.9rem] font-semibold transition-colors duration-200";
@@ -96,13 +100,18 @@ export function Button({
   } as const;
 
   const isExternal =
+    download !== undefined ||
     href.startsWith("http") ||
     href.startsWith("mailto:") ||
     href.startsWith("tel:");
 
   if (isExternal) {
     return (
-      <a href={href} className={`${base} ${variants[variant]} ${className}`}>
+      <a
+        href={href}
+        download={download}
+        className={`${base} ${variants[variant]} ${className}`}
+      >
         {children}
       </a>
     );
@@ -144,6 +153,24 @@ export function Plus({ className = "" }: { className?: string }) {
     >
       <path
         d="M10 4v12M4 10h12"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="square"
+      />
+    </svg>
+  );
+}
+
+export function Download({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      className={`h-[1.05em] w-[1.05em] ${className}`}
+      aria-hidden="true"
+    >
+      <path
+        d="M10 3v10m0 0-4-4m4 4 4-4M4 16.5h12"
         stroke="currentColor"
         strokeWidth="1.7"
         strokeLinecap="square"

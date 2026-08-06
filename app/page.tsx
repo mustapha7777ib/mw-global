@@ -4,6 +4,7 @@ import {
   Button,
   Container,
   CtaBand,
+  Download,
   Label,
   SectionHeading,
 } from "@/components/ui";
@@ -289,6 +290,36 @@ export default function HomePage() {
                   </div>
                 ))}
               </dl>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* ── Catalogue download ────────────────────────────────────────── */}
+      <section className="border-t border-ink-900/10 bg-white py-16">
+        <Container>
+          <div className="flex flex-col items-start gap-8 border border-ink-900/12 p-8 sm:flex-row sm:items-center sm:justify-between sm:p-10">
+            <div className="max-w-xl">
+              <Label>PDF download</Label>
+              <h2 className="display mt-4 text-[1.5rem] text-ink-900 sm:text-[1.75rem]">
+                {site.catalogue.label}
+              </h2>
+              <p className="mt-3 text-[0.95rem] leading-[1.7] text-ink-600">
+                Indicative specifications for every product line, plus
+                markets served and how we work — {site.catalogue.pages} pages,{" "}
+                {site.catalogue.fileSize}.
+              </p>
+            </div>
+            <div className="flex w-full shrink-0 flex-col gap-3 sm:w-auto sm:flex-row">
+              <Button
+                href={site.catalogue.href}
+                download="MW-Global-Catalogue-2026.pdf"
+              >
+                Download PDF <Download />
+              </Button>
+              <Button href="/catalogue" variant="outline">
+                View catalogue page
+              </Button>
             </div>
           </div>
         </Container>

@@ -289,8 +289,7 @@ export const markets = [
   },
   {
     region: "Middle East",
-    detail:
-      "UAE, Saudi Arabia, Lebanon, Qatar, Kuwait, Oman, Bahrain, Jordan",
+    detail: "UAE, Saudi Arabia, Lebanon, Qatar, Kuwait, Oman, Bahrain",
   },
   {
     region: "Africa",
@@ -302,7 +301,7 @@ export const markets = [
   },
   {
     region: "South America",
-    detail: "Brazil, Argentina",
+    detail: "Brazil",
   },
 ];
 

@@ -26,7 +26,7 @@ export const site = {
   // ── Contact ─────────────────────────────────────────────────────────────
   email: "mwglobal.team@gmail.com",
   salesEmail: "mwglobal.team@gmail.com",
-  phone: "+234 905 617 1492",
+  phone: "+234 911 013 8293",
   whatsapp: "2349056171492", // digits only, country code first
   hours: "24/7",
 

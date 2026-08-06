@@ -79,47 +79,148 @@ export const services: Service[] = [
   },
 ];
 
+export type CommoditySpec = {
+  label: string;
+  value: string;
+};
+
+export type CommodityItem = {
+  name: string;
+  /**
+   * Typical trade-standard ranges, not a lab result for stock currently held.
+   * Shown on the commodities page under an explicit "indicative" label —
+   * see the note there before adding a product without specs, or changing
+   * the numbers on one that has them.
+   */
+  specs?: CommoditySpec[];
+};
+
 export type CommodityGroup = {
   category: string;
   image: string;
   blurb: string;
-  items: string[];
+  items: CommodityItem[];
 };
 
 export const commodities: CommodityGroup[] = [
   {
-    category: "Agricultural Commodities",
+    // Renamed from "Agricultural Commodities": charcoal, gum arabic and
+    // frankincense are farm-and-forest products, not crops, and a buyer who
+    // knows the trade notices when they are filed wrongly.
+    category: "Agricultural & Natural Products",
     image: "/images/crop-field.jpg",
     blurb:
-      "Sourced, consolidated and export-packed to the specification agreed with the buyer.",
+      "Farm and forest products, sourced, consolidated and export-packed to the specification agreed with the buyer.",
     items: [
-      "Sesame Seeds",
-      "Raw Cashew Nuts",
-      "Cashew Kernels",
-      "Hibiscus Flower",
-      "Dried Split Ginger",
-      "Soybeans",
-      "Cocoa Beans",
-      "Shea Nuts & Butter",
-      "Gum Arabic",
-      "Cassava Derivatives",
-      "Groundnuts",
-      "Maize",
-      "Sorghum",
-      "Millet",
-      "Coffee Beans",
-      "Palm Kernel & Shells",
-      "Coconut & Copra",
-      "Tiger Nuts",
-      "Kola Nuts",
-      "Moringa Seeds",
-      "Dried Chilli Pepper",
-      "Turmeric",
-      "Yam Flour",
-      "Cotton Lint & Seed",
-      "Natural Rubber",
-      "Charcoal",
-      "Honey",
+      {
+        name: "Sesame Seeds",
+        specs: [
+          { label: "Purity", value: "≥ 99%" },
+          { label: "Moisture", value: "≤ 8%" },
+          { label: "Oil Content", value: "≥ 48%" },
+          { label: "Foreign Matter", value: "≤ 1%" },
+          { label: "Packaging", value: "25 kg / 50 kg bags" },
+          { label: "Min. Order", value: "1 × 20ft FCL" },
+        ],
+      },
+      {
+        name: "Raw Cashew Nuts",
+        specs: [
+          { label: "Nut Count (KOR)", value: "46–52 lbs / 80kg" },
+          { label: "Moisture", value: "≤ 10%" },
+          { label: "Defective Nuts", value: "≤ 8%" },
+          { label: "Foreign Matter", value: "≤ 1%" },
+          { label: "Packaging", value: "80 kg jute bags" },
+          { label: "Min. Order", value: "1 × 20ft FCL" },
+        ],
+      },
+      {
+        name: "Dried Hibiscus Flower (Zobo)",
+        specs: [
+          { label: "Botanical Name", value: "Hibiscus sabdariffa" },
+          { label: "Moisture", value: "≤ 12%" },
+          { label: "Colour", value: "Deep crimson / burgundy" },
+          { label: "Processing", value: "Sun-dried, hand-sorted" },
+          { label: "Packaging", value: "25 kg / 50 kg PP bags" },
+          { label: "Min. Order", value: "1 MT" },
+        ],
+      },
+      {
+        name: "Dried Chilli Pepper",
+        specs: [
+          { label: "Moisture", value: "≤ 12%" },
+          { label: "Colour", value: "Bright red" },
+          { label: "Form", value: "Whole / Crushed / Ground" },
+          { label: "Heat Level", value: "40,000–100,000 SHU" },
+          { label: "Packaging", value: "25 kg / 50 kg PP bags" },
+          { label: "Min. Order", value: "1 MT" },
+        ],
+      },
+      {
+        name: "Soybeans",
+        specs: [
+          { label: "Variety", value: "Non-GMO" },
+          { label: "Protein Content", value: "≥ 36%" },
+          { label: "Moisture", value: "≤ 13%" },
+          { label: "Oil Content", value: "≥ 18%" },
+          { label: "Packaging", value: "25 kg / 50 kg bags / bulk" },
+          { label: "Min. Order", value: "1 × 20ft FCL" },
+        ],
+      },
+      {
+        name: "Ginger (Dried Split & Powder)",
+        specs: [
+          { label: "Form", value: "Dried Split / Powder" },
+          { label: "Moisture", value: "≤ 10%" },
+          { label: "Gingerol", value: "High (variety-dependent)" },
+          { label: "Extraneous Matter", value: "≤ 1%" },
+          { label: "Packaging", value: "25 kg / 50 kg jute / PP bags" },
+          { label: "Min. Order", value: "1 MT" },
+        ],
+      },
+      {
+        name: "Gum Arabic",
+        specs: [
+          { label: "Botanical Source", value: "Acacia senegal / Acacia seyal" },
+          { label: "Moisture", value: "≤ 15%" },
+          { label: "Ash Content", value: "≤ 4%" },
+          { label: "Solubility", value: "Highly soluble in water" },
+          { label: "Packaging", value: "25 kg / 50 kg bags" },
+          { label: "Min. Order", value: "1 MT" },
+        ],
+      },
+      {
+        name: "Frankincense (Luban)",
+        specs: [
+          { label: "Form", value: "Raw tears / Granules" },
+          { label: "Colour", value: "Pale yellow to amber" },
+          { label: "Purity", value: "High — minimal bark / debris" },
+          { label: "Packaging", value: "10 kg / 25 kg bags" },
+          { label: "Min. Order", value: "500 kg" },
+        ],
+      },
+      {
+        name: "Hardwood Charcoal",
+        specs: [
+          { label: "Moisture", value: "≤ 5%" },
+          { label: "Ash Content", value: "≤ 3%" },
+          { label: "Fixed Carbon", value: "≥ 75%" },
+          { label: "Calorific Value", value: "7,000–8,000 kcal/kg" },
+          { label: "Packaging", value: "5 / 10 / 25 kg bags" },
+          { label: "Min. Order", value: "1 × 20ft FCL" },
+        ],
+      },
+      {
+        name: "Mangrove Charcoal",
+        specs: [
+          { label: "Moisture", value: "≤ 5%" },
+          { label: "Ash Content", value: "≤ 3%" },
+          { label: "Fixed Carbon", value: "≥ 78%" },
+          { label: "Calorific Value", value: "7,500–8,500 kcal/kg" },
+          { label: "Packaging", value: "5 / 10 / 25 kg bags" },
+          { label: "Min. Order", value: "1 × 20ft FCL" },
+        ],
+      },
     ],
   },
   {
@@ -128,31 +229,9 @@ export const commodities: CommodityGroup[] = [
     blurb:
       "Supplied to the grade agreed at contract, with independent testing arranged on request.",
     items: [
-      "Lead Ore (Galena)",
-      "Zinc Ore",
-      "Lithium Ore",
-      "Tin Ore (Cassiterite)",
-      "Columbite & Tantalite",
-      "Copper Ore",
-      "Iron Ore",
-      "Manganese Ore",
-      "Bauxite",
-      "Barite",
-      "Zircon Sand",
-      "Ilmenite & Rutile",
-      "Silica Sand",
-      "Kaolin",
-      "Feldspar",
-      "Gypsum",
-      "Limestone",
-      "Bentonite",
-      "Graphite",
-      "Talc",
-      "Mica",
-      "Fluorspar",
-      "Coal",
-      "Granite & Marble",
-      "Gemstones",
+      { name: "Lead Ore (Galena)" },
+      { name: "Tin Ore (Cassiterite)" },
+      { name: "Columbite & Tantalite" },
     ],
   },
   {
@@ -161,27 +240,16 @@ export const commodities: CommodityGroup[] = [
     blurb:
       "Procured from vetted manufacturers and delivered to your warehouse or site.",
     items: [
-      "Industrial Machinery",
-      "Agricultural Equipment",
-      "Building Materials",
-      "Automobiles & Spare Parts",
-      "Petrochemicals",
-      "Consumer Goods",
-      "Generators & Power Equipment",
-      "Solar & Renewable Systems",
-      "Electrical Fittings & Cables",
-      "Steel & Metal Products",
-      "Pumps, Valves & Fittings",
-      "Plastics & Polymers",
-      "Chemicals & Fertilisers",
-      "Packaging Materials",
-      "Textiles & Fabrics",
-      "Medical & Laboratory Equipment",
-      "Cold Chain & Refrigeration",
-      "Office & IT Equipment",
-      "Safety & Industrial Consumables",
-      "Furniture & Fittings",
-      "Food & Beverage Products",
+      { name: "Industrial Machinery" },
+      { name: "Agricultural Equipment" },
+      { name: "Building Materials" },
+      { name: "Automobiles & Spare Parts" },
+      { name: "Generators & Power Equipment" },
+      { name: "Solar & Renewable Systems" },
+      { name: "Electrical Fittings & Cables" },
+      { name: "Steel & Metal Products" },
+      { name: "Chemicals & Fertilisers" },
+      { name: "Medical & Laboratory Equipment" },
     ],
   },
 ];
@@ -212,41 +280,29 @@ export const processSteps = [
 export const markets = [
   {
     region: "Asia",
-    detail:
-      "China, India, Vietnam, Japan, South Korea, Singapore, Indonesia, Malaysia, Thailand, Philippines, Pakistan, Bangladesh, Sri Lanka, Nepal, Taiwan, Hong Kong, Cambodia, Myanmar, Kazakhstan, Uzbekistan",
+    detail: "China, India, Vietnam, Indonesia, Malaysia",
   },
   {
     region: "Europe",
     detail:
-      "Netherlands, Germany, Turkey, United Kingdom, Belgium, Spain, Italy, France, Poland, Greece, Portugal, Ireland, Switzerland, Sweden, Denmark, Norway, Austria, Czech Republic, Romania, Bulgaria, Hungary, Lithuania, Latvia, Estonia, Croatia",
+      "Netherlands, Germany, Turkey, Belgium, United Kingdom, Spain, Italy",
   },
   {
     region: "Middle East",
     detail:
-      "UAE, Saudi Arabia, Lebanon, Jordan, Qatar, Kuwait, Oman, Bahrain, Israel, Iraq, Cyprus, Georgia, Armenia, Azerbaijan",
+      "UAE, Saudi Arabia, Lebanon, Qatar, Kuwait, Oman, Bahrain, Jordan",
   },
   {
     region: "Africa",
-    detail:
-      "Ghana, Kenya, South Africa, Egypt, Morocco, Tanzania, Côte d'Ivoire, Senegal, Ethiopia, Cameroon, Togo, Benin, Uganda, Rwanda, Zambia, Zimbabwe, Mozambique, Algeria, Tunisia, Sudan, Burkina Faso, Mali, Niger, Guinea, Sierra Leone, Liberia, Gambia, DR Congo, Angola, Namibia, Botswana, Mauritius",
+    detail: "Ghana, Côte d'Ivoire, Kenya, South Africa",
   },
   {
     region: "North America",
-    detail: "United States, Canada, Mexico",
-  },
-  {
-    region: "Central America & Caribbean",
-    detail:
-      "Panama, Dominican Republic, Costa Rica, Guatemala, Honduras, Jamaica, Trinidad & Tobago",
+    detail: "United States, Canada",
   },
   {
     region: "South America",
-    detail:
-      "Brazil, Argentina, Chile, Peru, Colombia, Ecuador, Uruguay, Paraguay, Bolivia",
-  },
-  {
-    region: "Oceania",
-    detail: "Australia, New Zealand, Papua New Guinea, Fiji",
+    detail: "Brazil, Argentina",
   },
 ];
 

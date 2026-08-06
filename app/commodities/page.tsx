@@ -6,6 +6,7 @@ import {
   CtaBand,
   Label,
   PageHeader,
+  Plus,
 } from "@/components/ui";
 import { commodities } from "@/lib/content";
 
@@ -68,6 +69,12 @@ export default function CommoditiesPage() {
                 <p className="mt-4 text-[0.98rem] leading-[1.7] text-ink-600">
                   {group.blurb}
                 </p>
+                {group.items.some((item) => item.specs) ? (
+                  <p className="mt-4 text-[0.82rem] text-ink-500">
+                    Tap a product for indicative specifications. Typical
+                    trade-standard ranges — confirmed in writing per shipment.
+                  </p>
+                ) : null}
                 <div className="mt-8 aspect-4/3 overflow-hidden bg-ink-100">
                   <img
                     src={group.image}
@@ -79,14 +86,46 @@ export default function CommoditiesPage() {
 
               <div className="lg:col-span-7 lg:col-start-6">
                 <ul className="grid gap-x-10 sm:grid-cols-2">
-                  {group.items.map((item) => (
-                    <li
-                      key={item}
-                      className="display border-b border-ink-900/10 py-5 text-[1.15rem] text-ink-900"
-                    >
-                      {item}
-                    </li>
-                  ))}
+                  {group.items.map((item) =>
+                    item.specs ? (
+                      <li
+                        key={item.name}
+                        className="border-b border-ink-900/10 sm:col-span-2"
+                      >
+                        <details className="group py-5">
+                          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 marker:hidden [&::-webkit-details-marker]:hidden">
+                            <span className="display text-[1.15rem] text-ink-900">
+                              {item.name}
+                            </span>
+                            <Plus className="shrink-0 text-ink-400 transition-transform duration-200 group-open:rotate-45" />
+                          </summary>
+                          <dl className="mt-5 grid gap-x-10 gap-y-0.5 border-t border-ink-900/8 pt-4 sm:grid-cols-2">
+                            {item.specs.map((spec) => (
+                              <div
+                                key={spec.label}
+                                className="flex justify-between gap-4 border-b border-ink-900/5 py-2 text-[0.86rem]"
+                              >
+                                <dt className="text-ink-500">{spec.label}</dt>
+                                <dd className="text-right font-medium text-ink-900">
+                                  {spec.value}
+                                </dd>
+                              </div>
+                            ))}
+                          </dl>
+                          <p className="mt-3 text-[0.78rem] text-ink-400">
+                            Indicative — confirmed at the time of order.
+                          </p>
+                        </details>
+                      </li>
+                    ) : (
+                      <li
+                        key={item.name}
+                        className="display border-b border-ink-900/10 py-5 text-[1.15rem] text-ink-900"
+                      >
+                        {item.name}
+                      </li>
+                    ),
+                  )}
                 </ul>
               </div>
             </div>

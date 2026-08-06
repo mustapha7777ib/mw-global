@@ -177,10 +177,10 @@ export default function HomePage() {
                   <ul className="rule mt-7 grid gap-x-8 pt-2 sm:grid-cols-2">
                     {group.items.map((item) => (
                       <li
-                        key={item}
+                        key={item.name}
                         className="border-b border-ink-900/8 py-3 text-[0.95rem] font-medium text-ink-800"
                       >
-                        {item}
+                        {item.name}
                       </li>
                     ))}
                   </ul>

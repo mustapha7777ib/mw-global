@@ -133,6 +133,25 @@ export function ArrowRight({ className = "" }: { className?: string }) {
   );
 }
 
+/** Expand/collapse marker for a <details> disclosure — rotates to a cross when open. */
+export function Plus({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      className={`h-4 w-4 ${className}`}
+      aria-hidden="true"
+    >
+      <path
+        d="M10 4v12M4 10h12"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="square"
+      />
+    </svg>
+  );
+}
+
 export function Check({ className = "" }: { className?: string }) {
   return (
     <svg

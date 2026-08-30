@@ -4,11 +4,12 @@ import {
   Button,
   Container,
   CtaBand,
+  Download,
   Label,
   PageHeader,
   SectionHeading,
 } from "@/components/ui";
-import { site } from "@/lib/site";
+import { certifications, site } from "@/lib/site";
 import { differentiators, markets } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -100,6 +101,7 @@ export default function AboutPage() {
               <dl className="mt-8">
                 {[
                   ["Registered name", site.name],
+                  ["RC number", site.rc],
                   ["Office", site.office.lines.join(", ")],
                   ["Phone", site.phone],
                   ["Business hours", site.hours],
@@ -125,6 +127,63 @@ export default function AboutPage() {
               </p>
             </div>
           </div>
+        </Container>
+      </section>
+
+      {/* ── Certifications ────────────────────────────────────────────── */}
+      {/*
+        Anchored: the catalogue PDF and the footer both link buyers straight
+        here, and certificates with a scan on file open as a PDF rather than
+        asking them to send an email first.
+      */}
+      <section id="certifications" className="scroll-mt-24 py-24 sm:py-32">
+        <Container>
+          <SectionHeading
+            label="Certifications & compliance"
+            title="Registered, certified and documented"
+            intro="We hold the registrations required to trade internationally from Nigeria. Certificates with a copy on file open directly below; the rest are released on request."
+          />
+          <ul className="mt-12 grid gap-x-16 sm:grid-cols-2">
+            {certifications.map((cert, i) => (
+              <li key={cert.name} className="border-b border-ink-900/10 py-7">
+                <div className="flex items-baseline gap-4">
+                  <span className="label text-crimson-600">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3 className="display text-[1.3rem] text-ink-900">
+                      {cert.name}
+                    </h3>
+                    <p className="label mt-2 text-brand-700">{cert.issuer}</p>
+                  </div>
+                </div>
+                <div className="mt-3 pl-10">
+                  <p className="text-[0.96rem] leading-[1.75] text-ink-600">
+                    {cert.description}
+                  </p>
+                  {cert.reference ? (
+                    <p className="mt-2 text-[0.88rem] text-ink-500">
+                      {cert.reference}
+                    </p>
+                  ) : null}
+                  {cert.file ? (
+                    <a
+                      href={cert.file}
+                      target="_blank"
+                      rel="noopener"
+                      className="label mt-4 inline-flex items-center gap-2 border-b border-brand-700/40 pb-1 text-brand-700 transition-colors hover:border-brand-700 hover:text-brand-800"
+                    >
+                      View certificate <Download />
+                    </a>
+                  ) : (
+                    <p className="label mt-4 text-ink-400">
+                      Copy released on request
+                    </p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
         </Container>
       </section>
 

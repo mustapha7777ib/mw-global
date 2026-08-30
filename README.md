@@ -48,7 +48,36 @@ automatically — change it in one place and the map follows.
   catalogue, the four-step process, markets served, and the "why us" points.
   Pages render straight from these arrays, so adding a commodity or a country
   is a one-line change.
-- **[`lib/site.ts`](lib/site.ts)** — company facts and navigation.
+- **[`lib/site.ts`](lib/site.ts)** — company facts, navigation, and the
+  `certifications` list rendered at `/about#certifications`.
+
+## Certifications
+
+[`lib/site.ts`](lib/site.ts) holds the registrations the company actually
+holds. An entry with a `file` renders as a download; drop the scan into
+[`public/certificates/`](public/certificates/) and point `file` at it. Without a
+`file` the entry says "copy released on request" rather than linking nowhere.
+
+The catalogue PDF links to these same files by absolute URL, so a renamed
+certificate means regenerating the catalogue too.
+
+## The catalogue PDF
+
+[`catalogue/mw-global-catalogue.source.html`](catalogue/mw-global-catalogue.source.html)
+is the source for the downloadable catalogue — a single self-contained file with
+its fonts inlined, laid out for A4 print. Edit it, then regenerate:
+
+```bash
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+  --headless=new --disable-gpu --no-pdf-header-footer \
+  --print-to-pdf="public/downloads/mw-global-catalogue-2026.pdf" \
+  "file://$PWD/catalogue/mw-global-catalogue.source.html"
+```
+
+Each `<section class="page">` is one fixed-height A4 page — it does **not**
+reflow, so added copy silently overlaps whatever sits below it. Open the pages
+you touched before shipping. Update `site.catalogue.pages` and `fileSize` in
+[`lib/site.ts`](lib/site.ts) if either changes.
 
 ## The quote form
 

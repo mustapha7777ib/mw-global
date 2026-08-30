@@ -38,6 +38,16 @@ export function Footer() {
                   </Link>
                 </li>
               ))}
+              {/* Not in `nav` — it's a section of /about, not a page of its
+                  own, but buyers look for it by name so it earns a link. */}
+              <li>
+                <Link
+                  href="/about#certifications"
+                  className="transition-colors hover:text-white"
+                >
+                  Certifications
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -87,7 +97,7 @@ export function Footer() {
 
         <div className="rule-light mt-14 flex flex-col gap-4 pt-7 text-[0.82rem] sm:flex-row sm:items-center sm:justify-between">
           <p>
-            © {year} {site.name}. All rights reserved.
+            © {year} {site.name}. RC {site.rc}. All rights reserved.
           </p>
           {contact.email ? (
             <a href={`mailto:${contact.email}`} className="hover:text-white">

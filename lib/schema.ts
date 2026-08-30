@@ -14,7 +14,7 @@
  */
 
 import { commodities, services } from "@/lib/content";
-import { absolute, confirmed, site, siteUrl } from "@/lib/site";
+import { absolute, certifications, confirmed, site, siteUrl } from "@/lib/site";
 
 export const ORGANIZATION_ID = `${siteUrl}/#organization`;
 export const WEBSITE_ID = `${siteUrl}/#website`;
@@ -68,6 +68,20 @@ export const organizationSchema = {
   telephone: site.phone,
   email: confirmed(site.email),
   address: postalAddress,
+  // The CAC registration number — the one identifier that ties this entity to
+  // a public Nigerian company record, so it is worth stating explicitly.
+  identifier: {
+    "@type": "PropertyValue",
+    name: "CAC registration number",
+    value: site.rc,
+  },
+  hasCredential: certifications.map((cert) => ({
+    "@type": "EducationalOccupationalCredential",
+    name: cert.name,
+    credentialCategory: "certification",
+    recognizedBy: { "@type": "Organization", name: cert.issuer },
+    ...(cert.file ? { url: absolute(cert.file) } : {}),
+  })),
   logo: {
     "@type": "ImageObject",
     "@id": LOGO_ID,

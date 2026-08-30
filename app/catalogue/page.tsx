@@ -57,8 +57,8 @@ const contents = [
   },
   {
     label: "Reference",
-    title: "Markets, terms & documentation",
-    text: "Destination markets by region, loading ports, Incoterms, payment terms and the document set prepared for every shipment.",
+    title: "Markets, certifications & documentation",
+    text: "Destination markets by region, loading ports, Incoterms, payment terms, our registrations and the document set prepared for every shipment.",
   },
 ];
 

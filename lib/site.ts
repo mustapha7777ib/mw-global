@@ -17,6 +17,8 @@ const postal = {
 export const site = {
   name: "M/W Global Services Limited",
   shortName: "M/W Global",
+  /** CAC registration number, from the certificate of incorporation. */
+  rc: "776881",
   tagline: "Import • Export • Logistics",
   description:
     "M/W Global Services Limited is an international trade company sourcing and shipping agricultural commodities, solid minerals and industrial goods between Africa and world markets.",
@@ -57,10 +59,63 @@ export const site = {
     href: "/downloads/mw-global-catalogue-2026.pdf",
     label: "Product & Commodity Catalogue — 2026",
     year: "2026",
-    pages: 14,
-    fileSize: "0.5 MB",
+    pages: 15,
+    fileSize: "0.7 MB",
   },
 } as const;
+
+/**
+ * Registrations and certifications the company actually holds.
+ *
+ * `file` points at a scanned copy in `public/certificates/` and is what makes
+ * the entry a download rather than a claim — a buyer can verify it without
+ * emailing anyone. Leave `file` undefined until the scan is actually in that
+ * folder: the UI then says the copy is released on request instead of
+ * publishing a link that 404s.
+ *
+ * The catalogue PDF links to these same files by absolute URL, so if a filename
+ * changes here, regenerate the catalogue from `catalogue/` too.
+ */
+export type Certification = {
+  name: string;
+  issuer: string;
+  description: string;
+  /** Registration/reference number, where the certificate carries one. */
+  reference?: string;
+  file?: string;
+};
+
+export const certifications: Certification[] = [
+  {
+    name: "NEPC Export Certification",
+    issuer: "Nigerian Export Promotion Council",
+    description:
+      "Authorisation to export Nigerian goods to international markets.",
+    reference: "RE 0045048 · valid to 12 August 2028",
+    file: "/certificates/nepc-export-certificate.pdf",
+  },
+  {
+    name: "Halal Certification",
+    issuer: "Accredited Halal certification body",
+    description:
+      "Products meet Islamic dietary and processing standards, required by buyers across the Middle East and parts of Asia.",
+  },
+  {
+    name: "GACC Registration",
+    issuer:
+      "General Administration of Customs of the People's Republic of China",
+    description:
+      "Registration with China's customs authority, required for food and agricultural consignments entering the Chinese market.",
+  },
+  {
+    name: "CAC Registration",
+    issuer: "Corporate Affairs Commission, Nigeria",
+    description:
+      "Legally registered Nigerian business entity, incorporated 6 October 2008.",
+    reference: `RC ${site.rc}`,
+    file: "/certificates/cac-certificate-of-incorporation.pdf",
+  },
+];
 
 /**
  * Absolute origin, no trailing slash. Set NEXT_PUBLIC_SITE_URL in the hosting

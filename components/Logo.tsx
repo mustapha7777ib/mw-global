@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { site } from "@/lib/site";
+import { defaultLocale, localeHref, type Locale } from "@/lib/i18n";
 
 /**
  * Recreation of the M/W Global Services Limited mark: green square holding two
@@ -68,16 +69,25 @@ export function LogoMark({
   );
 }
 
-export function Logo({ variant = "dark" }: { variant?: "light" | "dark" }) {
+export function Logo({
+  variant = "dark",
+  locale = defaultLocale,
+  homeAriaSuffix = "home",
+}: {
+  variant?: "light" | "dark";
+  locale?: Locale;
+  /** Reads after the company name in the link's accessible name. */
+  homeAriaSuffix?: string;
+}) {
   const primary = variant === "light" ? "text-white" : "text-ink-900";
   const secondary =
     variant === "light" ? "text-brand-200" : "text-crimson-600";
 
   return (
     <Link
-      href="/"
+      href={localeHref(locale, "/")}
       className="group inline-flex items-center gap-3"
-      aria-label={`${site.name} — home`}
+      aria-label={`${site.name} — ${homeAriaSuffix}`}
     >
       <LogoMark withBar={false} className="h-[2.6rem] w-[2.6rem] shrink-0" />
       <span className="flex flex-col leading-none">

@@ -8,7 +8,11 @@ import {
   Label,
   SectionHeading,
 } from "@/components/ui";
-import { site } from "@/lib/site";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { contact, site } from "@/lib/site";
+import { getDictionary, isLocale, localeHref, translator, t } from "@/lib/i18n";
+import { alternatesFor } from "@/lib/i18n/metadata";
 import {
   commodities,
   differentiators,
@@ -17,7 +21,27 @@ import {
   services,
 } from "@/lib/content";
 
-export default function HomePage() {
+export async function generateMetadata({
+  params,
+}: PageProps<"/[lang]">): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
+  const d = getDictionary(lang);
+  return {
+    description: d.home.meta.description,
+    alternates: alternatesFor(lang, "/"),
+  };
+}
+
+export default async function HomePage({ params }: PageProps<"/[lang]">) {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
+
+  const tr = translator(lang);
+  const d = getDictionary(lang);
+  const href = (path: string) => localeHref(lang, path);
+  const catalogue = site.catalogue[lang];
+
   return (
     <>
       {/* ── Hero: full-bleed port photograph ──────────────────────────── */}
@@ -34,19 +58,18 @@ export default function HomePage() {
         <Container className="relative">
           <div className="max-w-3xl py-28 sm:py-36 lg:py-44">
             <h1 className="display mt-7 text-[2.6rem] text-white sm:text-[3.4rem] lg:text-[4rem]">
-              We move African goods
-              <br className="hidden sm:block" /> to world markets.
+              {d.home.heroTitleLineOne}
+              <br className="hidden sm:block" /> {d.home.heroTitleLineTwo}
             </h1>
             <p className="mt-7 max-w-lg text-[1.125rem] leading-[1.65] text-white/80">
-              Agricultural commodities, solid minerals and industrial imports —
-              sourced, shipped and cleared by one accountable team.
+              {d.home.heroIntro}
             </p>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <Button href="/contact#quote" variant="light">
-                Request a Quote <ArrowRight />
+              <Button href={href("/contact#quote")} variant="light">
+                {d.common.requestQuote} <ArrowRight />
               </Button>
-              <Button href="/commodities" variant="quiet">
-                View Commodities
+              <Button href={href("/commodities")} variant="quiet">
+                {d.home.viewCommodities}
               </Button>
             </div>
           </div>
@@ -59,32 +82,23 @@ export default function HomePage() {
         <Container>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-5">
-              <Label>Who we are</Label>
+              <Label>{d.home.introLabel}</Label>
               <p className="display mt-6 text-[1.75rem] leading-[1.3] text-ink-900 sm:text-[2.1rem]">
-                Good trade comes down to who you buy from. We built the
-                supplier relationships first, and the rest follows from there.
+                {d.home.introStatement}
               </p>
             </div>
             <div className="lg:col-span-6 lg:col-start-7">
               <div className="space-y-5 text-[1.0625rem] leading-[1.75] text-ink-600">
-                <p>
-                  Before expanding into international trade, 
-                  M/W Global Services Limited was established with a simple goal: 
-                  to build reliable sourcing networks and source clients with 
-                  quality products. 
-                </p>
-                <p>
-                  We are committed to professionalism, transparency, 
-                  and delivering products that meet our customers' requirements 
-                  through strong partnerships and careful supplier selection.
-                </p>
+                {d.home.introParagraphs.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
               </div>
               <div className="rule mt-9 pt-7">
                 <Link
-                  href="/about"
+                  href={href("/about")}
                   className="inline-flex items-center gap-2.5 text-[0.95rem] font-semibold text-brand-700 transition-colors hover:text-brand-800"
                 >
-                  More about the company <ArrowRight />
+                  {d.home.moreAboutCompany} <ArrowRight />
                 </Link>
               </div>
             </div>
@@ -96,16 +110,16 @@ export default function HomePage() {
       <section className="bg-white py-24 sm:py-32">
         <Container>
           <SectionHeading
-            label="What we do"
-            title="Four service lines, one accountable partner"
-            intro="Most trade problems happen in the handoffs — between the supplier and the inspector, the freight agent and the customs broker. We run all four lines ourselves, so the handoffs are ours to manage."
+            label={d.home.servicesLabel}
+            title={d.home.servicesTitle}
+            intro={d.home.servicesIntro}
           />
 
           <div className="mt-16 grid gap-x-8 gap-y-14 sm:grid-cols-2">
             {services.map((service, i) => (
               <Link
                 key={service.slug}
-                href={`/services#${service.slug}`}
+                href={href(`/services#${service.slug}`)}
                 className="group block"
               >
                 <div className="relative aspect-4/3 overflow-hidden bg-ink-100">
@@ -114,18 +128,18 @@ export default function HomePage() {
                     alt=""
                     className="photo h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
-                  <span className="absolute left-0 top-0 bg-brand-700 px-3.5 py-2 text-[0.72rem] font-bold tracking-[0.12em] text-white">
+                  <span className="absolute start-0 top-0 bg-brand-700 px-3.5 py-2 text-[0.72rem] font-bold tracking-[0.12em] text-white">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                 </div>
                 <h3 className="display mt-6 text-[1.4rem] text-ink-900 transition-colors group-hover:text-brand-700">
-                  {service.title}
+                  {tr(service.title)}
                 </h3>
                 <p className="mt-3 text-[0.98rem] leading-[1.7] text-ink-600">
-                  {service.short}
+                  {tr(service.short)}
                 </p>
                 <span className="mt-4 inline-flex items-center gap-2 text-[0.88rem] font-semibold text-crimson-600">
-                  Learn more <ArrowRight />
+                  {d.common.learnMore} <ArrowRight />
                 </span>
               </Link>
             ))}
@@ -138,21 +152,21 @@ export default function HomePage() {
         <Container>
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
             <SectionHeading
-              label="What we trade"
-              title="Products we source and supply"
+              label={d.home.commoditiesLabel}
+              title={d.home.commoditiesTitle}
             />
             <Link
-              href="/commodities"
+              href={href("/commodities")}
               className="inline-flex shrink-0 items-center gap-2.5 pb-2 text-[0.95rem] font-semibold text-brand-700 hover:text-brand-800"
             >
-              Full catalogue <ArrowRight />
+              {d.home.fullCatalogue} <ArrowRight />
             </Link>
           </div>
 
           <div className="mt-16 space-y-16">
             {commodities.map((group, i) => (
               <div
-                key={group.category}
+                key={group.category.en}
                 className="grid items-center gap-8 lg:grid-cols-12 lg:gap-14"
               >
                 <div
@@ -161,7 +175,7 @@ export default function HomePage() {
                   <div className="aspect-5/4 overflow-hidden bg-ink-100">
                     <img
                       src={group.image}
-                      alt={group.category}
+                      alt={tr(group.category)}
                       className="photo h-full w-full object-cover"
                     />
                   </div>
@@ -170,18 +184,18 @@ export default function HomePage() {
                   className={`lg:col-span-6 ${i % 2 === 1 ? "lg:order-1 lg:col-start-1" : "lg:col-start-7"}`}
                 >
                   <h3 className="display text-[1.7rem] text-ink-900">
-                    {group.category}
+                    {tr(group.category)}
                   </h3>
                   <p className="mt-3 max-w-lg text-[0.98rem] leading-[1.7] text-ink-600">
-                    {group.blurb}
+                    {tr(group.blurb)}
                   </p>
                   <ul className="rule mt-7 grid gap-x-8 pt-2 sm:grid-cols-2">
                     {group.items.map((item) => (
                       <li
-                        key={item.name}
+                        key={item.name.en}
                         className="border-b border-ink-900/8 py-3 text-[0.95rem] font-medium text-ink-800"
                       >
-                        {item.name}
+                        {tr(item.name)}
                       </li>
                     ))}
                   </ul>
@@ -202,8 +216,8 @@ export default function HomePage() {
         />
         <Container className="relative py-24 sm:py-32">
           <SectionHeading
-            label="How we work"
-            title="From first enquiry to documents in hand"
+            label={d.home.processLabel}
+            title={d.home.processTitle}
             tone="light"
           />
           <ol className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
@@ -213,10 +227,10 @@ export default function HomePage() {
                   {step.step}
                 </span>
                 <h3 className="mt-3 text-[1.05rem] font-semibold text-white">
-                  {step.title}
+                  {tr(step.title)}
                 </h3>
                 <p className="mt-3 text-[0.92rem] leading-[1.7] text-white/65">
-                  {step.text}
+                  {tr(step.text)}
                 </p>
               </li>
             ))}
@@ -230,8 +244,8 @@ export default function HomePage() {
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-4">
               <SectionHeading
-                label="Why M/W Global"
-                title="What clients tell us they value"
+                label={d.home.differentiatorsLabel}
+                title={d.home.differentiatorsTitle}
               />
               <div className="mt-10 aspect-square overflow-hidden bg-ink-100">
                 <img
@@ -245,7 +259,7 @@ export default function HomePage() {
               <dl>
                 {differentiators.map((item, i) => (
                   <div
-                    key={item.title}
+                    key={item.title.en}
                     className={`border-b border-ink-900/10 py-8 ${i === 0 ? "border-t" : ""}`}
                   >
                     <dt className="flex items-baseline gap-4">
@@ -253,11 +267,11 @@ export default function HomePage() {
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <span className="display text-[1.35rem] text-ink-900">
-                        {item.title}
+                        {tr(item.title)}
                       </span>
                     </dt>
-                    <dd className="mt-3 pl-10 text-[0.98rem] leading-[1.75] text-ink-600">
-                      {item.text}
+                    <dd className="mt-3 ps-10 text-[0.98rem] leading-[1.75] text-ink-600">
+                      {tr(item.text)}
                     </dd>
                   </div>
                 ))}
@@ -272,20 +286,23 @@ export default function HomePage() {
         <Container>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-4">
-              <SectionHeading label="Markets we serve" title="Where our cargo lands" />
+              <SectionHeading
+                label={d.home.marketsLabel}
+                title={d.home.marketsTitle}
+              />
             </div>
             <div className="lg:col-span-8">
               <dl className="grid gap-x-10 sm:grid-cols-2">
                 {markets.map((market) => (
                   <div
-                    key={market.region}
+                    key={market.region.en}
                     className="border-b border-ink-900/10 py-6"
                   >
                     <dt className="display text-[1.25rem] text-ink-900">
-                      {market.region}
+                      {tr(market.region)}
                     </dt>
                     <dd className="mt-2 text-[0.92rem] leading-[1.65] text-ink-500">
-                      {market.detail}
+                      {tr(market.detail)}
                     </dd>
                   </div>
                 ))}
@@ -300,25 +317,26 @@ export default function HomePage() {
         <Container>
           <div className="flex flex-col items-start gap-8 border border-ink-900/12 p-8 sm:flex-row sm:items-center sm:justify-between sm:p-10">
             <div className="max-w-xl">
-              <Label>PDF download</Label>
+              <Label>{d.home.catalogueBandLabel}</Label>
               <h2 className="display mt-4 text-[1.5rem] text-ink-900 sm:text-[1.75rem]">
-                {site.catalogue.label}
+                {catalogue.label}
               </h2>
               <p className="mt-3 text-[0.95rem] leading-[1.7] text-ink-600">
-                Indicative specifications for every product line, plus
-                markets served and how we work — {site.catalogue.pages} pages,{" "}
-                {site.catalogue.fileSize}.
+                {d.home.catalogueBandText(
+                  catalogue.pages,
+                  catalogue.fileSize,
+                )}
               </p>
             </div>
             <div className="flex w-full shrink-0 flex-col gap-3 sm:w-auto sm:flex-row">
               <Button
-                href={site.catalogue.href}
-                download="MW-Global-Catalogue-2026.pdf"
+                href={catalogue.href}
+                download={catalogue.downloadAs}
               >
-                Download PDF <Download />
+                {d.common.downloadPdf} <Download />
               </Button>
-              <Button href="/catalogue" variant="outline">
-                View catalogue page
+              <Button href={href("/catalogue")} variant="outline">
+                {d.home.viewCataloguePage}
               </Button>
             </div>
           </div>
@@ -326,16 +344,13 @@ export default function HomePage() {
       </section>
 
       <CtaBand
-        title="Tell us the spec. We'll come back with a price."
-        intro="Send the product, grade, volume and destination and we will come back to you with an offer."
+        title={d.home.ctaTitle}
+        intro={d.home.ctaIntro}
       >
-        <Button href="/contact#quote" variant="light">
-          Request a Quote <ArrowRight />
+        <Button href={href("/contact#quote")} variant="light">
+          {d.common.requestQuote} <ArrowRight />
         </Button>
-        <Button
-          href={`tel:${site.phone.replace(/[^\d+]/g, "")}`}
-          variant="quiet"
-        >
+        <Button href={contact.telHref} variant="quiet" dir="ltr">
           {site.phone}
         </Button>
       </CtaBand>

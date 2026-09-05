@@ -41,6 +41,13 @@
   --color-ink-900: #131413;
   --color-ink-950: #0a0b0a;
 
+  /* Latin-first stacks for the English pages. Each `--font-*` here expands to
+     TWO families: the real face plus a next/font-generated "… Fallback" that
+     is a metric-adjusted *local system font*. That fallback carries no
+     unicode-range, so it answers for Arabic too — which is why an Arabic face
+     appended after it is never reached, and Arabic silently rendered in Arial.
+     The Arabic pages therefore get their own stacks below rather than trying
+     to append to these. */
   --font-sans: var(--font-plex), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, sans-serif;
   --font-serif: var(--font-source-serif), ui-serif, Georgia, "Times New Roman",
@@ -76,6 +83,46 @@ body {
   font-weight: 600;
   letter-spacing: -0.021em;
   line-height: 1.08;
+}
+
+/* Arabic runs taller than Latin and its letterforms carry no useful negative
+   tracking, so the Latin display settings crowd it. Loosen both, and drop the
+   Latin-only optical tightening. */
+/* The Arabic site is set in one face throughout — IBM Plex Sans Arabic — so
+   both the body and display stacks resolve to it. Leading with it is what
+   makes it reachable at all (see the note above). The Latin faces still trail
+   each stack for the Latin runs inside Arabic copy, such as the company's
+   registered name.
+
+   Arabic has no serif/sans distinction to mirror the Latin pairing with, so a
+   second face here would read as an inconsistency rather than a hierarchy;
+   weight and size carry the hierarchy instead. */
+[lang="ar"] {
+  --font-sans: var(--font-plex-arabic), var(--font-plex), ui-sans-serif,
+    system-ui, sans-serif;
+  --font-serif: var(--font-plex-arabic), var(--font-plex), ui-sans-serif,
+    system-ui, sans-serif;
+}
+
+[lang="ar"] .display {
+  /* Headings separate from body by weight and size alone, since both are the
+     same face. 700 gives them the presence the Latin serif gets from its
+     shape. */
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.45;
+}
+
+[lang="ar"] body,
+[lang="ar"] {
+  line-height: 1.8;
+}
+
+/* The mono-ish uppercase label treatment is a Latin device: Arabic has no
+   case, so `uppercase` is a no-op and the wide tracking just breaks the
+   joins between letters. */
+[lang="ar"] .label {
+  letter-spacing: 0;
 }
 
 /* Small uppercase label with a crimson rule — the recurring section marker. */

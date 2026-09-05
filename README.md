@@ -37,7 +37,7 @@ Still placeholders:
 | `email` in [`lib/site.ts`](lib/site.ts) | Remove the square brackets once confirmed |
 | `salesEmail` in [`lib/site.ts`](lib/site.ts) | The trade-desk address |
 | `url` and `social` in [`lib/site.ts`](lib/site.ts) | Live domain and social profiles |
-| [`app/layout.tsx`](app/layout.tsx) | `metadataBase` — set to your live domain |
+| [`app/[lang]/layout.tsx`](app/%5Blang%5D/layout.tsx) | `metadataBase` — set to your live domain |
 
 The office address drives the Google Maps embed on the contact page
 automatically — change it in one place and the map follows.
@@ -50,6 +50,41 @@ automatically — change it in one place and the map follows.
   is a one-line change.
 - **[`lib/site.ts`](lib/site.ts)** — company facts, navigation, and the
   `certifications` list rendered at `/about#certifications`.
+
+## Languages (English + Arabic)
+
+The site is published in both languages. English is served unprefixed
+(`/about`) so URLs already indexed keep working; Arabic sits under `/ar`
+(`/ar/about`). [`proxy.ts`](proxy.ts) rewrites the unprefixed English URLs onto
+the `[lang]` segment and 308-redirects `/en/...` so each page has exactly one
+indexable address.
+
+Where the words live:
+
+- **[`lib/i18n/en.ts`](lib/i18n/en.ts) / [`ar.ts`](lib/i18n/ar.ts)** — page copy
+  (headings, intros, form labels). `ar.ts` is checked against `en.ts`, so a
+  string added to one and not the other is a build error, not an English
+  sentence on the Arabic page.
+- **[`lib/content.ts`](lib/content.ts) / [`lib/site.ts`](lib/site.ts)** — product,
+  service and company facts, as `{ en, ar }` pairs next to the specifications
+  they describe. A value written as a plain string is used verbatim in both
+  languages — deliberate for specs, where a figure restated twice can drift.
+
+Adding a page means adding it under `app/[lang]/`, adding its path to `nav` in
+`lib/site.ts`, and adding a label under `nav` plus a `meta` block in both
+dictionaries. It then appears in the navigation, the footer and the sitemap
+automatically.
+
+Three things worth knowing before editing:
+
+- **Anchor ids and React keys use the English value** (`slugify(group.category.en)`).
+  An id that changed per language would break `/commodities#solid-minerals`.
+- **The quote form submits English values.** The visitor reads a translated
+  service name; the trade desk receives the English one, so enquiries stay
+  triageable.
+- **Latin-script runs inside Arabic need `dir="ltr"`** — a phone number without
+  it renders as `8293 013 911 234+`. Use logical Tailwind classes (`ps-`, `-me-`,
+  `start-0`, `text-end`) rather than physical ones so layouts mirror on their own.
 
 ## Certifications
 
@@ -117,7 +152,10 @@ enquiry is HTML-escaped before it goes into the email body.
 | `/about` | Story, company details, mission, values, approach, markets |
 | `/services` | Detailed section per service line, engagement process |
 | `/commodities` | Full catalogue by category |
+| `/catalogue` | Catalogue download, what's inside, stats |
 | `/contact` | Contact details, WhatsApp link, live Google Maps embed, quote form |
+
+Each also exists in Arabic under `/ar` — `/ar/about`, `/ar/services` and so on.
 
 ## Design system
 

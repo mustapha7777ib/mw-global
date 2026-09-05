@@ -15,6 +15,7 @@
 
 import { commodities, services } from "@/lib/content";
 import { absolute, certifications, confirmed, site, siteUrl } from "@/lib/site";
+import { htmlLang, locales, t, type Locale } from "@/lib/i18n";
 
 export const ORGANIZATION_ID = `${siteUrl}/#organization`;
 export const WEBSITE_ID = `${siteUrl}/#website`;
@@ -56,15 +57,15 @@ const sameAs = Object.values(site.social)
  * other nodes point at, so search engines merge them into one entity instead
  * of reading three unrelated businesses.
  */
-export const organizationSchema = {
+export const organizationSchema = (locale: Locale) => ({
   "@type": "Organization",
   "@id": ORGANIZATION_ID,
   name: site.name,
   alternateName: site.shortName,
   legalName: site.name,
   url: siteUrl,
-  description: site.description,
-  slogan: site.tagline,
+  description: t(site.description, locale),
+  slogan: t(site.tagline, locale),
   telephone: site.phone,
   email: confirmed(site.email),
   address: postalAddress,
@@ -98,8 +99,8 @@ export const organizationSchema = {
     { "@type": "Place", name: "Worldwide" },
   ],
   knowsAbout: [
-    ...services.map((service) => service.title),
-    ...commodities.map((group) => group.category),
+    ...services.map((service) => t(service.title, locale)),
+    ...commodities.map((group) => t(group.category, locale)),
   ],
   hasOfferCatalog: {
     "@type": "OfferCatalog",
@@ -108,8 +109,8 @@ export const organizationSchema = {
       "@type": "Offer",
       itemOffered: {
         "@type": "Service",
-        name: service.title,
-        description: service.short,
+        name: t(service.title, locale),
+        description: t(service.short, locale),
         provider: { "@id": ORGANIZATION_ID },
       },
     })),
@@ -120,35 +121,37 @@ export const organizationSchema = {
       contactType: "sales",
       telephone: site.phone,
       email: confirmed(site.salesEmail) ?? confirmed(site.email),
-      availableLanguage: ["English"],
+      // The languages the trade desk answers in — which is the set the site
+      // is actually published in.
+      availableLanguage: locales.map((l) => htmlLang[l]),
       areaServed: site.office.postal.country,
     },
   ],
-};
+});
 
 /** WebSite — ties the domain to the company, and names the publisher. */
-export const websiteSchema = {
+export const websiteSchema = (locale: Locale) => ({
   "@type": "WebSite",
   "@id": WEBSITE_ID,
   url: siteUrl,
   name: site.name,
-  description: site.description,
+  description: t(site.description, locale),
   publisher: { "@id": ORGANIZATION_ID },
-  inLanguage: "en",
-};
+  inLanguage: htmlLang[locale],
+});
 
 /**
  * LocalBusiness — the physical Abuja office. Kept as its own node, and emitted
  * only on the contact page where the address and hours are actually shown, so
  * the markup always matches what a visitor can see.
  */
-export const localBusinessSchema = {
+export const localBusinessSchema = (locale: Locale) => ({
   "@type": "LocalBusiness",
   "@id": OFFICE_ID,
   name: site.name,
   url: absolute("/contact"),
   parentOrganization: { "@id": ORGANIZATION_ID },
-  description: site.description,
+  description: t(site.description, locale),
   telephone: site.phone,
   email: confirmed(site.email),
   address: postalAddress,
@@ -157,7 +160,7 @@ export const localBusinessSchema = {
   // Deliberately no priceRange / currenciesAccepted: both are optional, and
   // neither is established anywhere in this codebase. Structured data is a
   // factual claim to search engines, so it only states what is actually known.
-};
+});
 
 /**
  * Wraps nodes in a single @graph. One script tag per page keeps the entity

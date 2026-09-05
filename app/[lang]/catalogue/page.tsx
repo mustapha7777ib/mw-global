@@ -9,13 +9,28 @@ import {
 } from "@/components/ui";
 import { commodities, markets, services } from "@/lib/content";
 import { site } from "@/lib/site";
+import { notFound } from "next/navigation";
+import {
+  getDictionary,
+  isLocale,
+  localeHref,
+  t,
+  translator,
+} from "@/lib/i18n";
+import { alternatesFor } from "@/lib/i18n/metadata";
 
-export const metadata: Metadata = {
-  title: "Catalogue",
-  description:
-    "Download the M/W Global Services Limited product and commodity catalogue — indicative specifications for our agricultural, mineral and imported-goods lines, plus service coverage and markets served.",
-  alternates: { canonical: "/catalogue" },
-};
+export async function generateMetadata({
+  params,
+}: PageProps<"/[lang]/catalogue">): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
+  const d = getDictionary(lang);
+  return {
+    title: d.catalogue.meta.title,
+    description: d.catalogue.meta.description,
+    alternates: alternatesFor(lang, "/catalogue"),
+  };
+}
 
 // Computed from the same data the rest of the site renders from, so this
 // page can't drift out of step with what's actually on the commodities,
@@ -24,51 +39,38 @@ const commodityLineCount = commodities.reduce(
   (sum, group) => sum + group.items.length,
   0,
 );
+// Counted from the English list: it is a count of places, identical in both
+// languages, and only the English string is guaranteed to use ", " as its
+// separator.
 const marketCount = markets.reduce(
-  (sum, market) => sum + market.detail.split(", ").length,
+  (sum, market) => sum + market.detail.en.split(", ").length,
   0,
 );
 
-const stats = [
-  { value: String(services.length).padStart(2, "0"), label: "Service lines" },
-  {
-    value: String(commodityLineCount).padStart(2, "0"),
-    label: "Commodity lines",
-  },
-  { value: String(marketCount).padStart(2, "0"), label: "Destination markets" },
-  { value: String(markets.length).padStart(2, "0"), label: "World regions" },
-];
+export default async function CataloguePage({
+  params,
+}: PageProps<"/[lang]/catalogue">) {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
 
-const contents = [
-  {
-    label: "Category 01",
-    title: "Agricultural & Natural Products",
-    text: "Ten lines with indicative specifications — purity, moisture, packaging and minimum order — for sesame, cashew, hibiscus, chilli, soybeans, ginger, gum arabic, frankincense and both charcoal grades.",
-  },
-  {
-    label: "Category 02",
-    title: "Solid Minerals",
-    text: "Lead ore, tin ore and columbite & tantalite, with basis of sale, verification and packaging terms.",
-  },
-  {
-    label: "Category 03",
-    title: "Imported Goods",
-    text: "Ten lines across machinery, building materials, power equipment and more, procured to specification.",
-  },
-  {
-    label: "Reference",
-    title: "Markets, certifications & documentation",
-    text: "Destination markets by region, loading ports, Incoterms, payment terms, our registrations and the document set prepared for every shipment.",
-  },
-];
+  const tr = translator(lang);
+  const d = getDictionary(lang);
+  const href = (path: string) => localeHref(lang, path);
+  const catalogue = site.catalogue[lang];
 
-export default function CataloguePage() {
+  const stats = [
+    { value: String(services.length).padStart(2, "0"), label: d.catalogue.statServiceLines },
+    { value: String(commodityLineCount).padStart(2, "0"), label: d.catalogue.statCommodityLines },
+    { value: String(marketCount).padStart(2, "0"), label: d.catalogue.statDestinations },
+    { value: String(markets.length).padStart(2, "0"), label: d.catalogue.statRegions },
+  ];
+
   return (
     <>
       <PageHeader
-        label="Catalogue"
-        title={site.catalogue.label}
-        intro="Every product line we handle, with indicative specifications, service coverage and the markets we ship to — in one PDF you can save, forward or print."
+        label={d.catalogue.headerLabel}
+        title={catalogue.label}
+        intro={d.catalogue.headerIntro}
         image="/images/grain-sacks.jpg"
       />
 
@@ -78,37 +80,37 @@ export default function CataloguePage() {
             {/* ── Download card ─────────────────────────────────────────── */}
             <div className="lg:col-span-4">
               <div className="border border-ink-900/12 bg-white p-8">
-                <Label>PDF download</Label>
+                <Label>{d.catalogue.downloadLabel}</Label>
                 <p className="display mt-5 text-[1.3rem] text-ink-900">
-                  {site.catalogue.label}
+                  {catalogue.label}
                 </p>
                 <p className="mt-3 text-[0.9rem] text-ink-500">
-                  {site.catalogue.pages} pages · {site.catalogue.fileSize}
+                  {d.catalogue.fileMeta(
+                    catalogue.pages,
+                    catalogue.fileSize,
+                  )}
                 </p>
                 <Button
-                  href={site.catalogue.href}
-                  download="MW-Global-Catalogue-2026.pdf"
+                  href={catalogue.href}
+                  download={catalogue.downloadAs}
                   className="mt-7 w-full"
                 >
-                  Download PDF <Download />
+                  {d.common.downloadPdf} <Download />
                 </Button>
                 <p className="mt-5 text-[0.82rem] leading-[1.6] text-ink-500">
-                  All specifications are indicative trade-standard ranges.
-                  Final specifications, packing and volumes are confirmed in
-                  writing and fixed in the sales contract at the time of
-                  order.
+                  {d.catalogue.disclaimer}
                 </p>
               </div>
             </div>
 
             {/* ── What's inside ─────────────────────────────────────────── */}
             <div className="lg:col-span-7 lg:col-start-6">
-              <Label>What's inside</Label>
+              <Label>{d.catalogue.insideLabel}</Label>
               <h2 className="display mt-5 text-[2rem] text-ink-900 sm:text-[2.3rem]">
-                Four sections, one document
+                {d.catalogue.insideTitle}
               </h2>
               <dl className="mt-8">
-                {contents.map((item, i) => (
+                {d.catalogue.contents.map((item, i) => (
                   <div
                     key={item.title}
                     className={`border-b border-ink-900/10 py-7 ${i === 0 ? "border-t" : ""}`}
@@ -151,11 +153,11 @@ export default function CataloguePage() {
       </section>
 
       <CtaBand
-        title="Prefer to talk it through first?"
-        intro="Send the product, grade, volume and destination and our trade desk will come back with an indicative offer."
+        title={d.catalogue.ctaTitle}
+        intro={d.catalogue.ctaIntro}
       >
-        <Button href="/contact#quote" variant="light">
-          Request a Quote
+        <Button href={href("/contact#quote")} variant="light">
+          {d.common.requestQuote}
         </Button>
       </CtaBand>
     </>

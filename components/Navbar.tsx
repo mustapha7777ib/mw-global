@@ -6,10 +6,41 @@ import { useEffect, useState } from "react";
 import { Logo } from "@/components/Logo";
 import { Container } from "@/components/ui";
 import { contact, nav, site } from "@/lib/site";
+import {
+  localeHref,
+  locales,
+  localeName,
+  splitLocale,
+  translator,
+  type Dictionary,
+  type Locale,
+} from "@/lib/i18n";
 
-export function Navbar() {
+/**
+ * A Client Component, so the locale and its copy arrive as props rather than
+ * through `next/root-params` — root parameters are server-only. Only the two
+ * dictionary slices this needs are passed, so the whole dictionary does not
+ * cross into the browser bundle.
+ */
+export function Navbar({
+  locale,
+  nav: navLabels,
+  common,
+}: {
+  locale: Locale;
+  nav: Dictionary["nav"];
+  common: Dictionary["common"];
+}) {
+  const tr = translator(locale);
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const href = (path: string) => localeHref(locale, path);
+
+  // The same page in the other language. `splitLocale` tolerates both the
+  // rewritten `/en/about` the server sees and the `/about` the browser shows,
+  // so the toggle points at the right page from either.
+  const { path: barePath } = splitLocale(pathname);
+  const other = locales.find((l) => l !== locale) ?? locale;
 
   useEffect(() => setOpen(false), [pathname]);
 
@@ -25,15 +56,27 @@ export function Navbar() {
       {/* Utility strip */}
       <div className="hidden bg-ink-950 py-2.5 text-[0.78rem] text-white/60 lg:block">
         <Container className="flex items-center justify-between">
-          <p>{site.tagline}</p>
+          <p>{tr(site.tagline)}</p>
           <div className="flex items-center gap-7">
-            <span>{site.hours}</span>
+            <span>{tr(site.hours)}</span>
             <a
-              href={`tel:${site.phone.replace(/[^\d+]/g, "")}`}
+              href={contact.telHref}
+              dir="ltr"
               className="text-white/85 transition-colors hover:text-white"
             >
               {site.phone}
             </a>
+            {/* `lang` and `hrefLang` tell a screen reader and a crawler that
+                this link's text and target are in the other language. */}
+            <Link
+              href={localeHref(other, barePath)}
+              lang={other}
+              hrefLang={other}
+              aria-label={common.switchLanguage}
+              className="font-semibold text-white/85 transition-colors hover:text-white"
+            >
+              {localeName[other]}
+            </Link>
           </div>
         </Container>
       </div>
@@ -41,21 +84,19 @@ export function Navbar() {
       <header className="sticky top-0 z-50 border-b border-ink-900/10 bg-paper/95 backdrop-blur-sm">
         <Container>
           <div className="flex h-[4.75rem] items-center justify-between gap-6">
-            <Logo />
+            <Logo locale={locale} homeAriaSuffix={common.homeAriaSuffix} />
 
             <nav
               className="hidden items-center gap-9 lg:flex"
-              aria-label="Main"
+              aria-label={common.mainNavLabel}
             >
-              {nav.map((item) => {
+              {nav.map((path) => {
                 const active =
-                  item.href === "/"
-                    ? pathname === "/"
-                    : pathname.startsWith(item.href);
+                  path === "/" ? barePath === "/" : barePath.startsWith(path);
                 return (
                   <Link
-                    key={item.href}
-                    href={item.href}
+                    key={path}
+                    href={href(path)}
                     aria-current={active ? "page" : undefined}
                     className={`relative py-1 text-[0.92rem] font-medium transition-colors ${
                       active
@@ -63,9 +104,9 @@ export function Navbar() {
                         : "text-ink-500 hover:text-ink-900"
                     }`}
                   >
-                    {item.label}
+                    {navLabels[path]}
                     {active ? (
-                      <span className="absolute -bottom-0.5 left-0 h-[2px] w-full bg-crimson-600" />
+                      <span className="absolute -bottom-0.5 start-0 h-[2px] w-full bg-crimson-600" />
                     ) : null}
                   </Link>
                 );
@@ -73,10 +114,10 @@ export function Navbar() {
             </nav>
 
             <Link
-              href="/contact#quote"
+              href={href("/contact#quote")}
               className="hidden bg-brand-700 px-6 py-3 text-[0.88rem] font-semibold text-white transition-colors hover:bg-brand-800 lg:inline-flex"
             >
-              Request a Quote
+              {common.requestQuote}
             </Link>
 
             <button
@@ -84,8 +125,8 @@ export function Navbar() {
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
               aria-controls="mobile-menu"
-              aria-label={open ? "Close menu" : "Open menu"}
-              className="-mr-2 grid h-11 w-11 place-items-center text-ink-900 lg:hidden"
+              aria-label={open ? common.closeMenu : common.openMenu}
+              className="-me-2 grid h-11 w-11 place-items-center text-ink-900 lg:hidden"
             >
               <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden="true">
                 {open ? (
@@ -113,34 +154,41 @@ export function Navbar() {
           }`}
         >
           <Container className="py-4">
-            <nav className="flex flex-col" aria-label="Mobile">
-              {nav.map((item) => {
+            <nav className="flex flex-col" aria-label={common.mobileNavLabel}>
+              {nav.map((path) => {
                 const active =
-                  item.href === "/"
-                    ? pathname === "/"
-                    : pathname.startsWith(item.href);
+                  path === "/" ? barePath === "/" : barePath.startsWith(path);
                 return (
                   <Link
-                    key={item.href}
-                    href={item.href}
+                    key={path}
+                    href={href(path)}
                     aria-current={active ? "page" : undefined}
                     className={`border-b border-ink-900/8 py-3.5 text-[1.05rem] font-medium ${
                       active ? "text-crimson-600" : "text-ink-800"
                     }`}
                   >
-                    {item.label}
+                    {navLabels[path]}
                   </Link>
                 );
               })}
             </nav>
             <Link
-              href="/contact#quote"
+              href={href("/contact#quote")}
               className="mt-5 flex items-center justify-center bg-brand-700 px-6 py-3.5 text-[0.92rem] font-semibold text-white"
             >
-              Request a Quote
+              {common.requestQuote}
             </Link>
             <div className="mt-5 pb-2 text-[0.85rem] text-ink-500">
-              <a className="block py-1" href={contact.telHref}>
+              <Link
+                href={localeHref(other, barePath)}
+                lang={other}
+                hrefLang={other}
+                aria-label={common.switchLanguage}
+                className="block py-1 font-semibold text-ink-800"
+              >
+                {localeName[other]}
+              </Link>
+              <a className="block py-1" href={contact.telHref} dir="ltr">
                 {site.phone}
               </a>
               {contact.email ? (

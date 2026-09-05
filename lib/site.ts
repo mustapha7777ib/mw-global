@@ -3,9 +3,17 @@
  *
  * Everything wrapped in [SQUARE BRACKETS] is still a placeholder — replace it
  * with the real value and it updates everywhere on the site at once.
+ *
+ * Values a visitor reads as prose are `{ en, ar }` pairs, so the English and
+ * Arabic sites can never disagree about a fact. Identifiers a machine reads —
+ * the domain, the phone number, the postal address behind the map — stay in
+ * one Latin form, because that is what dialers, mail clients and Google Maps
+ * expect regardless of the language the page is written in.
  */
 
-/** Structured office address — hoisted so `site.office.lines` can derive from it. */
+import type { MaybeText, Text } from "@/lib/i18n/text";
+
+/** Structured office address — hoisted so `site.office` can derive from it. */
 const postal = {
   street: "2 Emeritus Umaru Shehu Ave",
   locality: "Abuja",
@@ -14,35 +22,46 @@ const postal = {
   country: "NG", // ISO 3166-1 alpha-2
 } as const;
 
+/** The address as Google Maps and the LocalBusiness schema want it. */
+const mapQuery = `${postal.street}, ${postal.locality} ${postal.postalCode}, ${postal.region}`;
+
 export const site = {
   name: "M/W Global Services Limited",
   shortName: "M/W Global",
   /** CAC registration number, from the certificate of incorporation. */
   rc: "776881",
-  tagline: "Import • Export • Logistics",
-  description:
-    "M/W Global Services Limited is an international trade company sourcing and shipping agricultural commodities, solid minerals and industrial goods between Africa and world markets.",
+  tagline: {
+    en: "Import • Export • Logistics",
+    ar: "استيراد • تصدير • خدمات لوجستية",
+  } satisfies Text,
+  description: {
+    en: "M/W Global Services Limited is an international trade company sourcing and shipping agricultural commodities, solid minerals and industrial goods between Africa and world markets.",
+    ar: "شركة M/W Global Services Limited شركة تجارة دولية تتولّى توريد وشحن السلع الزراعية والمعادن الصلبة والبضائع الصناعية بين أفريقيا وأسواق العالم.",
+  } satisfies Text,
   url: "https://mwglobal.org.ng",
-
 
   // ── Contact ─────────────────────────────────────────────────────────────
   email: "mwglobal.team@gmail.com",
   salesEmail: "mwglobal.team@gmail.com",
   phone: "+234 911 013 8293",
   whatsapp: "2349056171492", // digits only, country code first
-  hours: "24/7",
+  hours: { en: "24/7", ar: "على مدار الساعة" } satisfies Text,
 
   // ── Office ──────────────────────────────────────────────────────────────
   // `postal` is the structured form, used for the LocalBusiness schema that
   // search engines read. `lines` is derived from it so the address a visitor
   // sees and the address Google indexes can never disagree.
   office: {
-    label: "Office",
+    label: { en: "Office", ar: "المكتب" } satisfies Text,
     postal,
-    lines: [
-      postal.street,
-      `${postal.locality} ${postal.postalCode}, ${postal.region}`,
-    ],
+    mapQuery,
+    lines: {
+      en: [
+        postal.street,
+        `${postal.locality} ${postal.postalCode}, ${postal.region}`,
+      ],
+      ar: ["2 شارع إميريتوس عمر شيهو", "أبوجا 900108، إقليم العاصمة الاتحادي"],
+    },
   },
 
   // ── Social ──────────────────────────────────────────────────────────────
@@ -53,14 +72,27 @@ export const site = {
   },
 
   // ── Downloadable catalogue ─────────────────────────────────────────────
-  // Regenerating the PDF? Keep this in step — pages/size drive the copy on
-  // the /catalogue page and the homepage download banner.
+  // One edition per language, each its own PDF. Regenerating either? Keep its
+  // `pages` and `fileSize` in step — they drive the copy on the /catalogue
+  // page and the homepage download banner. `downloadAs` is the filename the
+  // visitor's browser saves, so the two editions never overwrite each other in
+  // a downloads folder.
   catalogue: {
-    href: "/downloads/mw-global-catalogue-2026.pdf",
-    label: "Product & Commodity Catalogue — 2026",
+    en: {
+      href: "/downloads/mw-global-catalogue-2026.pdf",
+      downloadAs: "MW-Global-Catalogue-2026.pdf",
+      label: "Product & Commodity Catalogue — 2026",
+      pages: 15,
+      fileSize: "0.7 MB",
+    },
+    ar: {
+      href: "/downloads/mw-global-catalogue-2026-ar.pdf",
+      downloadAs: "MW-Global-Catalogue-2026-AR.pdf",
+      label: "كتالوج المنتجات والسلع — 2026",
+      pages: 15,
+      fileSize: "0.1 MB",
+    },
     year: "2026",
-    pages: 15,
-    fileSize: "0.7 MB",
   },
 } as const;
 
@@ -73,15 +105,19 @@ export const site = {
  * folder: the UI then says the copy is released on request instead of
  * publishing a link that 404s.
  *
+ * `name` and `issuer` stay in English in both languages: that is how they read
+ * on the certificate a buyer is handed, and translating them would make the
+ * page and the document disagree.
+ *
  * The catalogue PDF links to these same files by absolute URL, so if a filename
  * changes here, regenerate the catalogue from `catalogue/` too.
  */
 export type Certification = {
   name: string;
   issuer: string;
-  description: string;
+  description: Text;
   /** Registration/reference number, where the certificate carries one. */
-  reference?: string;
+  reference?: MaybeText;
   file?: string;
 };
 
@@ -89,29 +125,40 @@ export const certifications: Certification[] = [
   {
     name: "NEPC Export Certification",
     issuer: "Nigerian Export Promotion Council",
-    description:
-      "Authorisation to export Nigerian goods to international markets.",
-    reference: "RE 0045048 · valid to 12 August 2028",
+    description: {
+      en: "Authorisation to export Nigerian goods to international markets.",
+      ar: "ترخيص بتصدير البضائع النيجيرية إلى الأسواق الدولية.",
+    },
+    reference: {
+      en: "RE 0045048 · valid to 12 August 2028",
+      ar: "RE 0045048 · سارٍ حتى 12 أغسطس 2028",
+    },
     file: "/certificates/nepc-export-certificate.pdf",
   },
   {
     name: "Halal Certification",
     issuer: "Accredited Halal certification body",
-    description:
-      "Products meet Islamic dietary and processing standards, required by buyers across the Middle East and parts of Asia.",
+    description: {
+      en: "Products meet Islamic dietary and processing standards, required by buyers across the Middle East and parts of Asia.",
+      ar: "المنتجات مطابقة للاشتراطات الإسلامية في الغذاء والتصنيع، وهي مطلوبة لدى المشترين في الشرق الأوسط وأجزاء من آسيا.",
+    },
   },
   {
     name: "GACC Registration",
     issuer:
       "General Administration of Customs of the People's Republic of China",
-    description:
-      "Registration with China's customs authority, required for food and agricultural consignments entering the Chinese market.",
+    description: {
+      en: "Registration with China's customs authority, required for food and agricultural consignments entering the Chinese market.",
+      ar: "تسجيل لدى هيئة الجمارك الصينية، وهو شرط لدخول الشحنات الغذائية والزراعية إلى السوق الصينية.",
+    },
   },
   {
     name: "CAC Registration",
     issuer: "Corporate Affairs Commission, Nigeria",
-    description:
-      "Legally registered Nigerian business entity, incorporated 6 October 2008.",
+    description: {
+      en: "Legally registered Nigerian business entity, incorporated 6 October 2008.",
+      ar: "كيان تجاري نيجيري مسجّل قانونياً، تأسّس في 6 أكتوبر 2008.",
+    },
     reference: `RC ${site.rc}`,
     file: "/certificates/cac-certificate-of-incorporation.pdf",
   },
@@ -167,11 +214,17 @@ export const contact = {
 export const hasDistinctSalesEmail =
   Boolean(contact.salesEmail) && contact.salesEmail !== contact.email;
 
+/**
+ * Navigation, as locale-free paths. Labels live in `lib/i18n/{en,ar}.ts` keyed
+ * by these same paths, and `localeHref` prefixes them for the Arabic site.
+ */
 export const nav = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/services", label: "Services" },
-  { href: "/commodities", label: "Commodities" },
-  { href: "/catalogue", label: "Catalogue" },
-  { href: "/contact", label: "Contact" },
+  "/",
+  "/about",
+  "/services",
+  "/commodities",
+  "/catalogue",
+  "/contact",
 ] as const;
+
+export type NavHref = (typeof nav)[number];

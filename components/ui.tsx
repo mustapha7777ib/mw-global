@@ -79,6 +79,9 @@ type ButtonProps = {
   /** File name to save as. Forces a plain `<a>` so the browser downloads the
    * file instead of Next's router trying to client-side-navigate to it. */
   download?: string;
+  /** Set "ltr" for Latin-script content — a phone number, say — that would
+   * otherwise be reordered by the surrounding right-to-left page. */
+  dir?: "ltr" | "rtl";
 };
 
 export function Button({
@@ -87,6 +90,7 @@ export function Button({
   variant = "solid",
   className = "",
   download,
+  dir,
 }: ButtonProps) {
   const base =
     "inline-flex items-center justify-center gap-2.5 px-7 py-3.5 text-[0.9rem] font-semibold transition-colors duration-200";
@@ -110,6 +114,7 @@ export function Button({
       <a
         href={href}
         download={download}
+        dir={dir}
         className={`${base} ${variants[variant]} ${className}`}
       >
         {children}
@@ -118,18 +123,26 @@ export function Button({
   }
 
   return (
-    <Link href={href} className={`${base} ${variants[variant]} ${className}`}>
+    <Link
+      href={href}
+      dir={dir}
+      className={`${base} ${variants[variant]} ${className}`}
+    >
       {children}
     </Link>
   );
 }
 
+/**
+ * Points in the reading direction: `rtl:-scale-x-100` flips it on the Arabic
+ * pages, where an arrow that still pointed right would read as "back".
+ */
 export function ArrowRight({ className = "" }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 20 20"
       fill="none"
-      className={`h-[1.05em] w-[1.05em] ${className}`}
+      className={`h-[1.05em] w-[1.05em] rtl:-scale-x-100 ${className}`}
       aria-hidden="true"
     >
       <path

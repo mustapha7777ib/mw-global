@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { ArrowRight, Check } from "@/components/ui";
-import { services } from "@/lib/content";
 import { site } from "@/lib/site";
+import { type Dictionary } from "@/lib/i18n";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
@@ -12,7 +12,19 @@ const inputClass =
 
 const labelClass = "mb-2 block text-[0.82rem] font-medium text-ink-600";
 
-export function QuoteForm() {
+/**
+ * A Client Component: its copy arrives as a prop rather than through the
+ * dictionary directly, so only the form's own strings cross into the browser
+ * bundle instead of every page's copy in both languages.
+ */
+export function QuoteForm({
+  copy,
+  serviceOptions,
+}: {
+  copy: Dictionary["form"];
+  /** `label` is what the visitor reads; `value` is what the trade desk receives. */
+  serviceOptions: { value: string; label: string }[];
+}) {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
 
@@ -33,13 +45,13 @@ export function QuoteForm() {
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error(body.error ?? "Something went wrong. Please try again.");
+        throw new Error(body.error ?? copy.genericError);
       }
 
       form.reset();
       setStatus("sent");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unexpected error.");
+      setError(err instanceof Error ? err.message : copy.unexpectedError);
       setStatus("error");
     }
   }
@@ -51,18 +63,18 @@ export function QuoteForm() {
           <Check className="h-7 w-7" />
         </span>
         <h3 className="display mt-6 text-[1.5rem] text-ink-900">
-          Enquiry received
+          {copy.successHeading}
         </h3>
         <p className="mx-auto mt-3 max-w-md text-[0.95rem] leading-[1.7] text-ink-600">
-          Thank you. Our trade desk will review your requirement and respond
-          within one business day. For anything urgent, call {site.phone}.
+          {copy.successLead} {copy.successUrgent}{" "}
+          <span dir="ltr">{site.phone}</span>.
         </p>
         <button
           type="button"
           onClick={() => setStatus("idle")}
           className="mt-7 text-[0.9rem] font-semibold text-brand-700 underline underline-offset-4 hover:text-brand-800"
         >
-          Submit another enquiry
+          {copy.successAgain}
         </button>
       </div>
     );
@@ -73,16 +85,15 @@ export function QuoteForm() {
       onSubmit={handleSubmit}
       className="border border-ink-900/12 bg-white p-8 sm:p-10"
     >
-      <h2 className="display text-[1.6rem] text-ink-900">Request a quote</h2>
+      <h2 className="display text-[1.6rem] text-ink-900">{copy.heading}</h2>
       <p className="mt-2.5 text-[0.95rem] leading-[1.7] text-ink-600">
-        The more specific you are about grade, volume and destination, the
-        faster we can price it.
+        {copy.intro}
       </p>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2">
         <div>
           <label className={labelClass} htmlFor="name">
-            Full name <span className="text-crimson-600">*</span>
+            {copy.name} <span className="text-crimson-600">*</span>
           </label>
           <input
             id="name"
@@ -90,26 +101,26 @@ export function QuoteForm() {
             required
             autoComplete="name"
             className={inputClass}
-            placeholder="Jane Doe"
+            placeholder={copy.namePlaceholder}
           />
         </div>
 
         <div>
           <label className={labelClass} htmlFor="company">
-            Company
+            {copy.company}
           </label>
           <input
             id="company"
             name="company"
             autoComplete="organization"
             className={inputClass}
-            placeholder="Acme Trading Ltd"
+            placeholder={copy.companyPlaceholder}
           />
         </div>
 
         <div>
           <label className={labelClass} htmlFor="email">
-            Email <span className="text-crimson-600">*</span>
+            {copy.email} <span className="text-crimson-600">*</span>
           </label>
           <input
             id="email"
@@ -118,13 +129,13 @@ export function QuoteForm() {
             required
             autoComplete="email"
             className={inputClass}
-            placeholder="you@company.com"
+            placeholder={copy.emailPlaceholder}
           />
         </div>
 
         <div>
           <label className={labelClass} htmlFor="phone">
-            Phone / WhatsApp
+            {copy.phone}
           </label>
           <input
             id="phone"
@@ -132,13 +143,13 @@ export function QuoteForm() {
             type="tel"
             autoComplete="tel"
             className={inputClass}
-            placeholder="+00 000 000 0000"
+            placeholder={copy.phonePlaceholder}
           />
         </div>
 
         <div>
           <label className={labelClass} htmlFor="service">
-            Service required
+            {copy.service}
           </label>
           <select
             id="service"
@@ -146,32 +157,31 @@ export function QuoteForm() {
             className={inputClass}
             defaultValue=""
           >
-            <option value="">Select a service</option>
-            {services.map((service) => (
-              <option key={service.slug} value={service.title}>
-                {service.title}
+            <option value="">{copy.servicePlaceholder}</option>
+            {serviceOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
               </option>
             ))}
-            <option value="Other">Other / not sure</option>
+            <option value="Other">{copy.serviceOther}</option>
           </select>
         </div>
 
         <div>
           <label className={labelClass} htmlFor="destination">
-            Destination port / country
+            {copy.destination}
           </label>
           <input
             id="destination"
             name="destination"
             className={inputClass}
-            placeholder="e.g. Nhava Sheva, India"
+            placeholder={copy.destinationPlaceholder}
           />
         </div>
 
         <div className="sm:col-span-2">
           <label className={labelClass} htmlFor="message">
-            Commodity, grade and volume{" "}
-            <span className="text-crimson-600">*</span>
+            {copy.message} <span className="text-crimson-600">*</span>
           </label>
           <textarea
             id="message"
@@ -179,21 +189,21 @@ export function QuoteForm() {
             required
             rows={5}
             className={`${inputClass} resize-y`}
-            placeholder="e.g. 2 x 40ft FCL hulled sesame seeds, 99.5% purity, 6% max moisture, CIF Nhava Sheva, shipping September."
+            placeholder={copy.messagePlaceholder}
           />
         </div>
       </div>
 
       {/* Honeypot — bots fill this, humans never see it. */}
-      <div className="absolute left-[-9999px]" aria-hidden="true">
-        <label htmlFor="website">Website</label>
+      <div className="absolute start-[-9999px]" aria-hidden="true">
+        <label htmlFor="website">{copy.honeypot}</label>
         <input id="website" name="website" tabIndex={-1} autoComplete="off" />
       </div>
 
       {status === "error" ? (
         <p
           role="alert"
-          className="mt-6 border-l-2 border-crimson-600 bg-crimson-50 px-4 py-3 text-[0.9rem] text-crimson-800"
+          className="mt-6 border-s-2 border-crimson-600 bg-crimson-50 px-4 py-3 text-[0.9rem] text-crimson-800"
         >
           {error}
         </p>
@@ -204,13 +214,12 @@ export function QuoteForm() {
         disabled={status === "sending"}
         className="mt-8 inline-flex w-full items-center justify-center gap-2.5 bg-brand-700 px-8 py-4 text-[0.92rem] font-semibold text-white transition-colors hover:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
       >
-        {status === "sending" ? "Sending…" : "Send enquiry"}
+        {status === "sending" ? copy.sending : copy.submit}
         {status === "sending" ? null : <ArrowRight />}
       </button>
 
       <p className="mt-5 text-[0.82rem] leading-[1.6] text-ink-400">
-        We use your details only to respond to this enquiry. Fields marked{" "}
-        <span className="text-crimson-600">*</span> are required.
+        {copy.privacy}
       </p>
     </form>
   );

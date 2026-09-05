@@ -11,24 +11,42 @@ import {
 } from "@/components/ui";
 import { processSteps, services } from "@/lib/content";
 import { contact } from "@/lib/site";
+import { notFound } from "next/navigation";
+import { getDictionary, isLocale, localeHref, translator } from "@/lib/i18n";
+import { alternatesFor } from "@/lib/i18n/metadata";
 
 /** Falls back to the general address so the CTA never points at a dead mailbox. */
 const tradeDeskEmail = contact.salesEmail ?? contact.email;
 
-export const metadata: Metadata = {
-  title: "Services",
-  description:
-    "Agricultural commodity export, solid minerals trading, general goods import, and freight forwarding with licensed customs clearing.",
-  alternates: { canonical: "/services" },
-};
+export async function generateMetadata({
+  params,
+}: PageProps<"/[lang]/services">): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
+  const d = getDictionary(lang);
+  return {
+    title: d.services.meta.title,
+    description: d.services.meta.description,
+    alternates: alternatesFor(lang, "/services"),
+  };
+}
 
-export default function ServicesPage() {
+export default async function ServicesPage({
+  params,
+}: PageProps<"/[lang]/services">) {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
+
+  const tr = translator(lang);
+  const d = getDictionary(lang);
+  const href = (path: string) => localeHref(lang, path);
+
   return (
     <>
       <PageHeader
-        label="Our services"
-        title="Sourcing, shipping and clearing — end to end"
-        intro="Engage us for a single service or the full chain. Either way you deal with one team, one contract and one set of documents."
+        label={d.services.headerLabel}
+        title={d.services.headerTitle}
+        intro={d.services.headerIntro}
         image="/images/ship-crane.jpg"
       />
 
@@ -37,7 +55,7 @@ export default function ServicesPage() {
         <Container>
           <nav
             className="flex flex-wrap gap-x-10 gap-y-3 py-6"
-            aria-label="Jump to a service"
+            aria-label={d.services.jumpLabel}
           >
             {services.map((service, i) => (
               <a
@@ -48,7 +66,7 @@ export default function ServicesPage() {
                 <span className="label text-crimson-600">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                {service.title}
+                {tr(service.title)}
               </a>
             ))}
           </nav>
@@ -70,7 +88,7 @@ export default function ServicesPage() {
                 <div className="aspect-4/3 overflow-hidden bg-ink-100 lg:sticky lg:top-24 lg:aspect-3/4">
                   <img
                     src={service.image}
-                    alt={service.title}
+                    alt={tr(service.title)}
                     className="photo h-full w-full object-cover"
                   />
                 </div>
@@ -79,33 +97,33 @@ export default function ServicesPage() {
               <div
                 className={`lg:col-span-6 ${i % 2 === 1 ? "lg:order-1" : "lg:col-start-7"}`}
               >
-                <Label>Service {String(i + 1).padStart(2, "0")}</Label>
+                <Label>{d.services.serviceNumber(String(i + 1).padStart(2, "0"))}</Label>
                 <h2 className="display mt-5 text-[2rem] text-ink-900 sm:text-[2.4rem]">
-                  {service.title}
+                  {tr(service.title)}
                 </h2>
                 <p className="mt-5 text-[1.0625rem] leading-[1.7] text-ink-700">
-                  {service.short}
+                  {tr(service.short)}
                 </p>
                 <p className="mt-4 text-[0.98rem] leading-[1.75] text-ink-600">
-                  {service.body}
+                  {tr(service.body)}
                 </p>
 
-                <h3 className="label mt-10 text-ink-500">What&apos;s included</h3>
+                <h3 className="label mt-10 text-ink-500">{d.services.included}</h3>
                 <ul className="mt-5">
                   {service.points.map((point) => (
                     <li
-                      key={point}
+                      key={point.en}
                       className="flex items-start gap-4 border-b border-ink-900/10 py-3.5 text-[0.95rem] leading-[1.6] text-ink-700"
                     >
                       <Check className="mt-0.5 h-[1.1rem] w-[1.1rem] shrink-0 text-brand-700" />
-                      {point}
+                      {tr(point)}
                     </li>
                   ))}
                 </ul>
 
                 <div className="mt-8">
-                  <Button href="/contact#quote" variant="outline">
-                    Enquire about this service <ArrowRight />
+                  <Button href={href("/contact#quote")} variant="outline">
+                    {d.services.enquire} <ArrowRight />
                   </Button>
                 </div>
               </div>
@@ -124,8 +142,8 @@ export default function ServicesPage() {
         />
         <Container className="relative py-24 sm:py-28">
           <SectionHeading
-            label="Engagement process"
-            title="What working with us looks like"
+            label={d.services.processLabel}
+            title={d.services.processTitle}
             tone="light"
           />
           <ol className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
@@ -135,10 +153,10 @@ export default function ServicesPage() {
                   {step.step}
                 </span>
                 <h3 className="mt-3 text-[1.05rem] font-semibold text-white">
-                  {step.title}
+                  {tr(step.title)}
                 </h3>
                 <p className="mt-3 text-[0.92rem] leading-[1.7] text-white/65">
-                  {step.text}
+                  {tr(step.text)}
                 </p>
               </li>
             ))}
@@ -149,15 +167,15 @@ export default function ServicesPage() {
       
 
       <CtaBand
-        title="Not sure which service you need?"
-        intro="Describe what you are trying to move and where. We'll tell you what it takes."
+        title={d.services.ctaTitle}
+        intro={d.services.ctaIntro}
       >
-        <Button href="/contact#quote" variant="light">
-          Start a conversation <ArrowRight />
+        <Button href={href("/contact#quote")} variant="light">
+          {d.services.ctaButton} <ArrowRight />
         </Button>
         {tradeDeskEmail ? (
           <Button href={`mailto:${tradeDeskEmail}`} variant="quiet">
-            Email the trade desk
+            {d.services.ctaEmail}
           </Button>
         ) : null}
       </CtaBand>

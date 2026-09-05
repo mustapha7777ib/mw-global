@@ -104,6 +104,26 @@ body {
     system-ui, sans-serif;
 }
 
+/* Chinese, on the same single-face principle and for the same reachability
+   reason: the CJK face has to lead, or the Latin stack's generated fallback
+   answers for the Han characters first. Turkish needs no block of its own —
+   it is Latin script, and the faces above now carry the latin-ext subset. */
+[lang="zh-Hans"] {
+  --font-sans: var(--font-noto-sc), var(--font-plex), ui-sans-serif, system-ui,
+    sans-serif;
+  --font-serif: var(--font-noto-sc), var(--font-plex), ui-sans-serif, system-ui,
+    sans-serif;
+}
+
+/* Han characters are dense and square; the Latin display's negative tracking
+   and tight leading crowd them, and there is no italic or serif contrast to
+   lean on. Weight and size carry the hierarchy. */
+[lang="zh-Hans"] .display {
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+
 [lang="ar"] .display {
   /* Headings separate from body by weight and size alone, since both are the
      same face. 700 gives them the presence the Latin serif gets from its

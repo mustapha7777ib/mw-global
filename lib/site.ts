@@ -11,6 +11,7 @@
  * expect regardless of the language the page is written in.
  */
 
+import type { Locale } from "@/lib/i18n/config";
 import type { MaybeText, Text } from "@/lib/i18n/text";
 
 /** Structured office address — hoisted so `site.office` can derive from it. */
@@ -33,10 +34,14 @@ export const site = {
   tagline: {
     en: "Import • Export • Logistics",
     ar: "استيراد • تصدير • خدمات لوجستية",
+    tr: "İthalat • İhracat • Lojistik",
+    zh: "进口 • 出口 • 物流",
   } satisfies Text,
   description: {
     en: "M/W Global Services Limited is an international trade company sourcing and shipping agricultural commodities, solid minerals and industrial goods between Africa and world markets.",
     ar: "شركة M/W Global Services Limited شركة تجارة دولية تتولّى توريد وشحن السلع الزراعية والمعادن الصلبة والبضائع الصناعية بين أفريقيا وأسواق العالم.",
+    tr: "M/W Global Services Limited; Afrika ile dünya pazarları arasında tarımsal emtia, katı mineraller ve sınai ürünlerin tedarikini ve sevkiyatını yapan bir dış ticaret şirketidir.",
+    zh: "M/W Global Services Limited 是一家国际贸易公司，在非洲与全球市场之间采购并运输农产品、固体矿产及工业品。",
   } satisfies Text,
   url: "https://mwglobal.org.ng",
 
@@ -45,14 +50,19 @@ export const site = {
   salesEmail: "mwglobal.team@gmail.com",
   phone: "+234 911 013 8293",
   whatsapp: "2349056171492", // digits only, country code first
-  hours: { en: "24/7", ar: "على مدار الساعة" } satisfies Text,
+  hours: {
+    en: "24/7",
+    ar: "على مدار الساعة",
+    tr: "7/24",
+    zh: "全天候",
+  } satisfies Text,
 
   // ── Office ──────────────────────────────────────────────────────────────
   // `postal` is the structured form, used for the LocalBusiness schema that
   // search engines read. `lines` is derived from it so the address a visitor
   // sees and the address Google indexes can never disagree.
   office: {
-    label: { en: "Office", ar: "المكتب" } satisfies Text,
+    label: { en: "Office", ar: "المكتب", tr: "Ofis", zh: "办公室" } satisfies Text,
     postal,
     mapQuery,
     lines: {
@@ -61,6 +71,11 @@ export const site = {
         `${postal.locality} ${postal.postalCode}, ${postal.region}`,
       ],
       ar: ["2 شارع إميريتوس عمر شيهو", "أبوجا 900108، إقليم العاصمة الاتحادي"],
+      tr: [
+        "2 Emeritus Umaru Shehu Ave",
+        "Abuja 900108, Federal Başkent Bölgesi",
+      ],
+      zh: ["2 Emeritus Umaru Shehu Ave", "阿布贾 900108，联邦首都辖区"],
     },
   },
 
@@ -78,23 +93,54 @@ export const site = {
   // visitor's browser saves, so the two editions never overwrite each other in
   // a downloads folder.
   catalogue: {
-    en: {
-      href: "/downloads/mw-global-catalogue-2026.pdf",
-      downloadAs: "MW-Global-Catalogue-2026.pdf",
-      label: "Product & Commodity Catalogue — 2026",
-      pages: 15,
-      fileSize: "0.7 MB",
-    },
-    ar: {
-      href: "/downloads/mw-global-catalogue-2026-ar.pdf",
-      downloadAs: "MW-Global-Catalogue-2026-AR.pdf",
-      label: "كتالوج المنتجات والسلع — 2026",
-      pages: 15,
-      fileSize: "0.1 MB",
-    },
     year: "2026",
+    // Keyed by the language the PDF is *written in*, not by the pages that
+    // link it. Only these two editions exist; `catalogueFor` decides what a
+    // visitor reading another language is offered.
+    editions: {
+      en: {
+        locale: "en",
+        href: "/downloads/mw-global-catalogue-2026.pdf",
+        downloadAs: "MW-Global-Catalogue-2026.pdf",
+        label: "Product & Commodity Catalogue — 2026",
+        pages: 15,
+        fileSize: "0.7 MB",
+      },
+      ar: {
+        locale: "ar",
+        href: "/downloads/mw-global-catalogue-2026-ar.pdf",
+        downloadAs: "MW-Global-Catalogue-2026-AR.pdf",
+        label: "كتالوج المنتجات والسلع — 2026",
+        pages: 15,
+        fileSize: "0.1 MB",
+      },
+    },
   },
 } as const;
+
+/**
+ * The catalogue edition to offer a visitor reading `locale`.
+ *
+ * Only English and Arabic editions exist. A Turkish or Chinese visitor gets
+ * the English PDF rather than a dead link — and because the returned edition
+ * carries the language it is written in, the page can say so instead of
+ * letting them discover it after downloading.
+ */
+export type CatalogueEdition = {
+  /** The language the PDF itself is written in. */
+  locale: Locale;
+  href: string;
+  downloadAs: string;
+  label: string;
+  pages: number;
+  fileSize: string;
+};
+
+export function catalogueFor(locale: Locale): CatalogueEdition {
+  const editions: Readonly<Partial<Record<Locale, CatalogueEdition>>> =
+    site.catalogue.editions;
+  return editions[locale] ?? site.catalogue.editions.en;
+}
 
 /**
  * Registrations and certifications the company actually holds.
@@ -128,10 +174,14 @@ export const certifications: Certification[] = [
     description: {
       en: "Authorisation to export Nigerian goods to international markets.",
       ar: "ترخيص بتصدير البضائع النيجيرية إلى الأسواق الدولية.",
+      tr: "Nijerya menşeli ürünlerin uluslararası pazarlara ihracatı için yetki belgesi.",
+      zh: "尼日利亚商品出口至国际市场的授权资质。",
     },
     reference: {
       en: "RE 0045048 · valid to 12 August 2028",
       ar: "RE 0045048 · سارٍ حتى 12 أغسطس 2028",
+      tr: "RE 0045048 · 12 Ağustos 2028 tarihine kadar geçerli",
+      zh: "RE 0045048 · 有效期至 2028 年 8 月 12 日",
     },
     file: "/certificates/nepc-export-certificate.pdf",
   },
@@ -141,6 +191,8 @@ export const certifications: Certification[] = [
     description: {
       en: "Products meet Islamic dietary and processing standards, required by buyers across the Middle East and parts of Asia.",
       ar: "المنتجات مطابقة للاشتراطات الإسلامية في الغذاء والتصنيع، وهي مطلوبة لدى المشترين في الشرق الأوسط وأجزاء من آسيا.",
+      tr: "Ürünler, Orta Doğu ve Asya'nın bazı bölgelerindeki alıcıların talep ettiği İslami gıda ve üretim standartlarına uygundur.",
+      zh: "产品符合伊斯兰饮食与加工标准，中东及部分亚洲市场的买家通常要求此项认证。",
     },
   },
   {
@@ -150,6 +202,8 @@ export const certifications: Certification[] = [
     description: {
       en: "Registration with China's customs authority, required for food and agricultural consignments entering the Chinese market.",
       ar: "تسجيل لدى هيئة الجمارك الصينية، وهو شرط لدخول الشحنات الغذائية والزراعية إلى السوق الصينية.",
+      tr: "Çin gümrük idaresi nezdinde kayıt — gıda ve tarım sevkiyatlarının Çin pazarına girişi için zorunludur.",
+      zh: "中华人民共和国海关总署注册，食品及农产品进入中国市场的必要条件。",
     },
   },
   {
@@ -158,6 +212,8 @@ export const certifications: Certification[] = [
     description: {
       en: "Legally registered Nigerian business entity, incorporated 6 October 2008.",
       ar: "كيان تجاري نيجيري مسجّل قانونياً، تأسّس في 6 أكتوبر 2008.",
+      tr: "6 Ekim 2008'de kurulmuş, yasal olarak tescilli Nijerya şirketi.",
+      zh: "依法注册的尼日利亚企业实体，成立于 2008 年 10 月 6 日。",
     },
     reference: `RC ${site.rc}`,
     file: "/certificates/cac-certificate-of-incorporation.pdf",

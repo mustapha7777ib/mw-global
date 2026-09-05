@@ -27,8 +27,8 @@ export const en = {
     mobileNavLabel: "Mobile",
     openMenu: "Open menu",
     closeMenu: "Close menu",
-    /** Reads on the toggle itself: the language it switches you to. */
-    switchLanguage: "Switch to Arabic",
+    /** Labels the language menu, which lists every language but the current. */
+    language: "Language",
     homeAriaSuffix: "home",
     downloadPdf: "Download PDF",
   },
@@ -230,6 +230,8 @@ export const en = {
         text: "Destination markets by region, loading ports, Incoterms, payment terms, our registrations and the document set prepared for every shipment.",
       },
     ],
+    /** Shown only when the PDF on offer is not in the page's own language. */
+    englishEditionNote: "The catalogue PDF is in English.",
     statServiceLines: "Service lines",
     statCommodityLines: "Commodity lines",
     statDestinations: "Destination markets",

@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/Logo";
 import { Container } from "@/components/ui";
 import { contact, nav, site } from "@/lib/site";
 import {
+  htmlLang,
   localeHref,
   locales,
   localeName,
@@ -34,15 +35,38 @@ export function Navbar({
   const tr = translator(locale);
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef<HTMLDivElement>(null);
   const href = (path: string) => localeHref(locale, path);
 
-  // The same page in the other language. `splitLocale` tolerates both the
+  // This same page in each other language. `splitLocale` tolerates both the
   // rewritten `/en/about` the server sees and the `/about` the browser shows,
-  // so the toggle points at the right page from either.
+  // so the links point at the right page from either.
   const { path: barePath } = splitLocale(pathname);
-  const other = locales.find((l) => l !== locale) ?? locale;
+  const others = locales.filter((l) => l !== locale);
 
-  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    setOpen(false);
+    setLangOpen(false);
+  }, [pathname]);
+
+  // A menu that only closes on its own links strands the keyboard and anyone
+  // who clicks elsewhere expecting it to dismiss.
+  useEffect(() => {
+    if (!langOpen) return;
+    function onPointerDown(event: PointerEvent) {
+      if (!langRef.current?.contains(event.target as Node)) setLangOpen(false);
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setLangOpen(false);
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [langOpen]);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -54,7 +78,10 @@ export function Navbar({
   return (
     <>
       {/* Utility strip */}
-      <div className="hidden bg-ink-950 py-2.5 text-[0.78rem] text-white/60 lg:block">
+      {/* `relative z-60` puts the strip above the sticky header's z-50. The
+          header is later in the DOM, so without this the language menu opens
+          *underneath* it and is clipped. */}
+      <div className="relative z-60 hidden bg-ink-950 py-2.5 text-[0.78rem] text-white/60 lg:block">
         <Container className="flex items-center justify-between">
           <p>{tr(site.tagline)}</p>
           <div className="flex items-center gap-7">
@@ -66,17 +93,53 @@ export function Navbar({
             >
               {site.phone}
             </a>
-            {/* `lang` and `hrefLang` tell a screen reader and a crawler that
-                this link's text and target are in the other language. */}
-            <Link
-              href={localeHref(other, barePath)}
-              lang={other}
-              hrefLang={other}
-              aria-label={common.switchLanguage}
-              className="font-semibold text-white/85 transition-colors hover:text-white"
-            >
-              {localeName[other]}
-            </Link>
+            {/* Four languages laid out as a row crowded the strip, so they
+                collapse behind the current one. The menu is still real links
+                with `lang`/`hrefLang`, so a crawler following them reaches
+                every translation; only the visual weight is reduced. */}
+            <div className="relative" ref={langRef}>
+              <button
+                type="button"
+                onClick={() => setLangOpen((v) => !v)}
+                aria-expanded={langOpen}
+                aria-haspopup="true"
+                aria-controls="language-menu"
+                aria-label={common.language}
+                className="flex items-center gap-1.5 font-semibold text-white/85 transition-colors hover:text-white"
+              >
+                {localeName[locale]}
+                <svg
+                  viewBox="0 0 12 12"
+                  className={`h-2.5 w-2.5 transition-transform ${langOpen ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M2 4.5 6 8.5 10 4.5"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    fill="none"
+                  />
+                </svg>
+              </button>
+              <ul
+                id="language-menu"
+                hidden={!langOpen}
+                className="absolute end-0 top-full mt-2 min-w-32 border border-white/15 bg-ink-950 py-1 shadow-lg"
+              >
+                {others.map((l) => (
+                  <li key={l}>
+                    <Link
+                      href={localeHref(l, barePath)}
+                      lang={htmlLang[l]}
+                      hrefLang={htmlLang[l]}
+                      className="block px-4 py-2 text-white/75 transition-colors hover:bg-white/10 hover:text-white"
+                    >
+                      {localeName[l]}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </Container>
       </div>
@@ -179,15 +242,22 @@ export function Navbar({
               {common.requestQuote}
             </Link>
             <div className="mt-5 pb-2 text-[0.85rem] text-ink-500">
-              <Link
-                href={localeHref(other, barePath)}
-                lang={other}
-                hrefLang={other}
-                aria-label={common.switchLanguage}
-                className="block py-1 font-semibold text-ink-800"
+              <nav
+                aria-label={common.language}
+                className="flex flex-wrap gap-x-5 gap-y-1 pb-2"
               >
-                {localeName[other]}
-              </Link>
+                {others.map((l) => (
+                  <Link
+                    key={l}
+                    href={localeHref(l, barePath)}
+                    lang={htmlLang[l]}
+                    hrefLang={htmlLang[l]}
+                    className="py-1 font-semibold text-ink-800"
+                  >
+                    {localeName[l]}
+                  </Link>
+                ))}
+              </nav>
               <a className="block py-1" href={contact.telHref} dir="ltr">
                 {site.phone}
               </a>

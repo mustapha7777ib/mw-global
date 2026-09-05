@@ -1,12 +1,18 @@
 /**
- * Locale configuration — the one place that knows Arabic exists.
+ * Locale configuration — the one place that knows which languages exist.
  *
  * URL scheme: English is served unprefixed (`/about`) so every URL that was
- * already indexed keeps working, and Arabic sits under `/ar` (`/ar/about`).
- * `proxy.ts` rewrites the unprefixed English URLs onto the `[lang]` segment.
+ * already indexed keeps working, and every other language sits under its own
+ * segment (`/ar/about`, `/tr/about`, `/zh/about`). `proxy.ts` rewrites the
+ * unprefixed English URLs onto the `[lang]` segment.
+ *
+ * Adding a language is deliberately a type error until it is finished: extend
+ * this array and TypeScript will demand the new entry in every record below,
+ * a dictionary in `lib/i18n/`, and a translation of every `Text` value in
+ * `lib/site.ts` and `lib/content.ts`. Nothing ships half-translated.
  */
 
-export const locales = ["en", "ar"] as const;
+export const locales = ["en", "ar", "tr", "zh"] as const;
 
 export type Locale = (typeof locales)[number];
 
@@ -21,14 +27,33 @@ export function direction(locale: Locale): "ltr" | "rtl" {
   return locale === "ar" ? "rtl" : "ltr";
 }
 
-/** BCP-47 tag for <html lang> and hreflang. */
-export const htmlLang: Record<Locale, string> = { en: "en", ar: "ar" };
+/**
+ * BCP-47 tag for <html lang> and hreflang. Chinese is tagged by script rather
+ * than region — the copy is Simplified, which is what "zh-Hans" states, and it
+ * serves readers in Singapore and Malaysia as correctly as those in China.
+ */
+export const htmlLang: Record<Locale, string> = {
+  en: "en",
+  ar: "ar",
+  tr: "tr",
+  zh: "zh-Hans",
+};
 
 /** Open Graph wants language_TERRITORY. */
-export const ogLocale: Record<Locale, string> = { en: "en_NG", ar: "ar_AE" };
+export const ogLocale: Record<Locale, string> = {
+  en: "en_NG",
+  ar: "ar_AE",
+  tr: "tr_TR",
+  zh: "zh_CN",
+};
 
-/** Native name of each language, for the toggle. */
-export const localeName: Record<Locale, string> = { en: "English", ar: "العربية" };
+/** Native name of each language, for the language menu. */
+export const localeName: Record<Locale, string> = {
+  en: "English",
+  ar: "العربية",
+  tr: "Türkçe",
+  zh: "中文",
+};
 
 /**
  * Paths that are not localised pages — static files, the quote endpoint and

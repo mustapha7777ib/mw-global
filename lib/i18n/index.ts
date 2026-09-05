@@ -1,8 +1,10 @@
 import type { Locale } from "./config";
 import { ar } from "./ar";
 import { en, type Dictionary } from "./en";
+import { tr } from "./tr";
+import { zh } from "./zh";
 
-const dictionaries: Record<Locale, Dictionary> = { en, ar };
+const dictionaries: Record<Locale, Dictionary> = { en, ar, tr, zh };
 
 /**
  * Page copy for a locale.

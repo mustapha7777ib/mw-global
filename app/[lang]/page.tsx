@@ -10,7 +10,7 @@ import {
 } from "@/components/ui";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { contact, site } from "@/lib/site";
+import { catalogueFor, contact, site } from "@/lib/site";
 import { getDictionary, isLocale, localeHref, translator, t } from "@/lib/i18n";
 import { alternatesFor } from "@/lib/i18n/metadata";
 import {
@@ -40,7 +40,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const tr = translator(lang);
   const d = getDictionary(lang);
   const href = (path: string) => localeHref(lang, path);
-  const catalogue = site.catalogue[lang];
+  const catalogue = catalogueFor(lang);
 
   return (
     <>

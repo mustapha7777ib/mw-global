@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import {
   IBM_Plex_Sans,
   IBM_Plex_Sans_Arabic,
+  Noto_Sans_SC,
   Source_Serif_4,
 } from "next/font/google";
 import { Navbar } from "@/components/Navbar";
@@ -22,15 +23,17 @@ import {
 import { alternatesFor } from "@/lib/i18n/metadata";
 import "../globals.css";
 
+// "latin-ext" is what carries Turkish's ğ ş ı İ — without it those fall to a
+// system font mid-word, which shows as a visible mismatch inside a sentence.
 const plex = IBM_Plex_Sans({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-plex",
   display: "swap",
 });
 
 const sourceSerif = Source_Serif_4({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["400", "600", "700"],
   style: ["normal", "italic"],
   variable: "--font-source-serif",
@@ -48,6 +51,20 @@ const plexArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-plex-arabic",
+  display: "swap",
+});
+
+/**
+ * The Chinese face, on the same single-face principle as the Arabic one: CJK
+ * has no serif/sans pairing that mirrors the Latin one, so weight and size
+ * carry the hierarchy instead. next/font splits it into unicode-range chunks
+ * and the browser fetches only the ranges a page actually uses, which is what
+ * keeps a CJK face affordable here.
+ */
+const notoSC = Noto_Sans_SC({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-noto-sc",
   display: "swap",
 });
 
@@ -129,7 +146,7 @@ export default async function RootLayout({
     <html
       lang={htmlLang[lang]}
       dir={direction(lang)}
-      className={`${plex.variable} ${sourceSerif.variable} ${plexArabic.variable}`}
+      className={`${plex.variable} ${sourceSerif.variable} ${plexArabic.variable} ${notoSC.variable}`}
     >
       <body className="flex min-h-screen flex-col bg-paper">
         <a

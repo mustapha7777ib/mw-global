@@ -8,7 +8,7 @@ import {
   PageHeader,
 } from "@/components/ui";
 import { commodities, markets, services } from "@/lib/content";
-import { site } from "@/lib/site";
+import { catalogueFor, site } from "@/lib/site";
 import { notFound } from "next/navigation";
 import {
   getDictionary,
@@ -56,7 +56,7 @@ export default async function CataloguePage({
   const tr = translator(lang);
   const d = getDictionary(lang);
   const href = (path: string) => localeHref(lang, path);
-  const catalogue = site.catalogue[lang];
+  const catalogue = catalogueFor(lang);
 
   const stats = [
     { value: String(services.length).padStart(2, "0"), label: d.catalogue.statServiceLines },

@@ -4,8 +4,9 @@
  * Everything wrapped in [SQUARE BRACKETS] is still a placeholder — replace it
  * with the real value and it updates everywhere on the site at once.
  *
- * Values a visitor reads as prose are `{ en, ar }` pairs, so the English and
- * Arabic sites can never disagree about a fact. Identifiers a machine reads —
+ * Values a visitor reads as prose are `Text` — one string per published
+ * language, side by side — so the language sites can never disagree about a
+ * fact. Identifiers a machine reads —
  * the domain, the phone number, the postal address behind the map — stay in
  * one Latin form, because that is what dialers, mail clients and Google Maps
  * expect regardless of the language the page is written in.
@@ -87,16 +88,17 @@ export const site = {
   },
 
   // ── Downloadable catalogue ─────────────────────────────────────────────
-  // One edition per language, each its own PDF. Regenerating either? Keep its
+  // One edition per language, each its own PDF. Replacing one? Keep its
   // `pages` and `fileSize` in step — they drive the copy on the /catalogue
   // page and the homepage download banner. `downloadAs` is the filename the
-  // visitor's browser saves, so the two editions never overwrite each other in
-  // a downloads folder.
+  // visitor's browser saves, so editions never overwrite each other in a
+  // downloads folder.
   catalogue: {
     year: "2026",
     // Keyed by the language the PDF is *written in*, not by the pages that
-    // link it. Only these two editions exist; `catalogueFor` decides what a
-    // visitor reading another language is offered.
+    // link it. Every published language has its own edition today;
+    // `catalogueFor` still falls back to English so a language added later
+    // gets a working download before its own PDF exists.
     editions: {
       en: {
         locale: "en",
@@ -112,20 +114,28 @@ export const site = {
         downloadAs: "MW-Global-Catalogue-2026-AR.pdf",
         label: "كتالوج المنتجات والسلع — 2026",
         pages: 15,
+        fileSize: "0.2 MB",
+      },
+      tr: {
+        locale: "tr",
+        href: "/downloads/mw-global-catalogue-2026-tr.pdf",
+        downloadAs: "MW-Global-Catalogue-2026-TR.pdf",
+        label: "Ürün ve Emtia Kataloğu — 2026",
+        pages: 15,
         fileSize: "0.1 MB",
+      },
+      zh: {
+        locale: "zh",
+        href: "/downloads/mw-global-catalogue-2026-zh.pdf",
+        downloadAs: "MW-Global-Catalogue-2026-ZH.pdf",
+        label: "产品与商品目录 — 2026",
+        pages: 15,
+        fileSize: "0.8 MB",
       },
     },
   },
 } as const;
 
-/**
- * The catalogue edition to offer a visitor reading `locale`.
- *
- * Only English and Arabic editions exist. A Turkish or Chinese visitor gets
- * the English PDF rather than a dead link — and because the returned edition
- * carries the language it is written in, the page can say so instead of
- * letting them discover it after downloading.
- */
 export type CatalogueEdition = {
   /** The language the PDF itself is written in. */
   locale: Locale;
@@ -136,6 +146,14 @@ export type CatalogueEdition = {
   fileSize: string;
 };
 
+/**
+ * The catalogue edition to offer a visitor reading `locale`.
+ *
+ * Falls back to the English edition for a language without its own PDF, so a
+ * newly added language gets a working download rather than a dead link — and
+ * because the returned edition carries the language it is written in, the
+ * page can say so instead of letting the visitor find out after downloading.
+ */
 export function catalogueFor(locale: Locale): CatalogueEdition {
   const editions: Readonly<Partial<Record<Locale, CatalogueEdition>>> =
     site.catalogue.editions;
@@ -151,7 +169,7 @@ export function catalogueFor(locale: Locale): CatalogueEdition {
  * folder: the UI then says the copy is released on request instead of
  * publishing a link that 404s.
  *
- * `name` and `issuer` stay in English in both languages: that is how they read
+ * `name` and `issuer` stay in English in every language: that is how they read
  * on the certificate a buyer is handed, and translating them would make the
  * page and the document disagree.
  *

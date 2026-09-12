@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { IBM_Plex_Sans, Source_Serif_4 } from "next/font/google";
 import { ArrowRight, Button, Container } from "@/components/ui";
 import { defaultLocale, direction, getDictionary, htmlLang } from "@/lib/i18n";
@@ -46,11 +47,14 @@ export default function GlobalNotFound() {
     >
       <body className="bg-paper">
         <section className="relative isolate overflow-hidden bg-brand-950">
-          <img
+          <Image
             src="/images/ship-docked.jpg"
             alt=""
             aria-hidden="true"
-            className="photo absolute inset-0 h-full w-full object-cover opacity-25"
+            fill
+            preload
+            sizes="100vw"
+            className="photo object-cover opacity-25"
           />
           <Container className="relative py-32 sm:py-44">
             <div className="max-w-xl">

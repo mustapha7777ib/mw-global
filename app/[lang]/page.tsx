@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -46,10 +47,17 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
     <>
       {/* ── Hero: full-bleed port photograph ──────────────────────────── */}
       <section className="relative isolate overflow-hidden bg-brand-950">
-        <img
+        {/* The only photo on the page that is preloaded. Plain `<img>` tags
+            were each hoisted into a `<link rel="preload">` by React, so a
+            phone fetched ~5 MB of full-size photographs before the page's
+            script — and so the menu — could run. */}
+        <Image
           src="/images/hero-port.jpg"
           alt="Aerial view of shipping containers stacked at a working port"
-          className="photo absolute inset-0 h-full w-full object-cover opacity-40"
+          fill
+          preload
+          sizes="100vw"
+          className="photo object-cover opacity-40"
         />
         <div
           className="absolute inset-0 bg-linear-to-r from-brand-950 via-brand-950/80 to-transparent"
@@ -123,10 +131,12 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
                 className="group block"
               >
                 <div className="relative aspect-4/3 overflow-hidden bg-ink-100">
-                  <img
+                  <Image
                     src={service.image}
                     alt=""
-                    className="photo h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    fill
+                    sizes="(min-width: 1280px) 600px, (min-width: 640px) 50vw, 100vw"
+                    className="photo object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <span className="absolute start-0 top-0 bg-brand-700 px-3.5 py-2 text-[0.72rem] font-bold tracking-[0.12em] text-white">
                     {String(i + 1).padStart(2, "0")}
@@ -172,11 +182,13 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
                 <div
                   className={`lg:col-span-5 ${i % 2 === 1 ? "lg:order-2 lg:col-start-8" : ""}`}
                 >
-                  <div className="aspect-5/4 overflow-hidden bg-ink-100">
-                    <img
+                  <div className="relative aspect-5/4 overflow-hidden bg-ink-100">
+                    <Image
                       src={group.image}
                       alt={tr(group.category)}
-                      className="photo h-full w-full object-cover"
+                      fill
+                      sizes="(min-width: 1024px) 480px, 100vw"
+                      className="photo object-cover"
                     />
                   </div>
                 </div>
@@ -208,11 +220,13 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
 
       {/* ── Process over photograph ───────────────────────────────────── */}
       <section className="relative isolate overflow-hidden bg-brand-950">
-        <img
+        <Image
           src="/images/containers-sunset.jpg"
           alt=""
           aria-hidden="true"
-          className="photo absolute inset-0 h-full w-full object-cover opacity-20"
+          fill
+          sizes="100vw"
+          className="photo object-cover opacity-20"
         />
         <Container className="relative py-24 sm:py-32">
           <SectionHeading
@@ -247,11 +261,13 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
                 label={d.home.differentiatorsLabel}
                 title={d.home.differentiatorsTitle}
               />
-              <div className="mt-10 aspect-square overflow-hidden bg-ink-100">
-                <img
+              <div className="relative mt-10 aspect-square overflow-hidden bg-ink-100">
+                <Image
                   src="/images/freight-truck.jpg"
                   alt="Freight truck on a road between fields"
-                  className="photo h-full w-full object-cover"
+                  fill
+                  sizes="(min-width: 1024px) 380px, 100vw"
+                  className="photo object-cover"
                 />
               </div>
             </div>

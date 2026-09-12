@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import {
   ArrowRight,
   Button,
@@ -85,11 +86,13 @@ export default async function ServicesPage({
               <div
                 className={`lg:col-span-5 ${i % 2 === 1 ? "lg:order-2 lg:col-start-8" : ""}`}
               >
-                <div className="aspect-4/3 overflow-hidden bg-ink-100 lg:sticky lg:top-24 lg:aspect-3/4">
-                  <img
+                <div className="relative aspect-4/3 overflow-hidden bg-ink-100 lg:sticky lg:top-24 lg:aspect-3/4">
+                  <Image
                     src={service.image}
                     alt={tr(service.title)}
-                    className="photo h-full w-full object-cover"
+                    fill
+                    sizes="(min-width: 1024px) 480px, 100vw"
+                    className="photo object-cover"
                   />
                 </div>
               </div>
@@ -134,11 +137,13 @@ export default async function ServicesPage({
 
       {/* ── Process ───────────────────────────────────────────────────── */}
       <section className="relative isolate overflow-hidden bg-brand-950">
-        <img
+        <Image
           src="/images/containers-sunset.jpg"
           alt=""
           aria-hidden="true"
-          className="photo absolute inset-0 h-full w-full object-cover opacity-20"
+          fill
+          sizes="100vw"
+          className="photo object-cover opacity-20"
         />
         <Container className="relative py-24 sm:py-28">
           <SectionHeading

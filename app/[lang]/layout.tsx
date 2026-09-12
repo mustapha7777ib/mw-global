@@ -52,6 +52,10 @@ const plexArabic = IBM_Plex_Sans_Arabic({
   weight: ["400", "500", "600", "700"],
   variable: "--font-plex-arabic",
   display: "swap",
+  // A preload is emitted on every page, whatever its language, and on a phone
+  // those downloads queue ahead of the script that makes the page respond. The
+  // Arabic pages still fetch the face as soon as their CSS asks for it.
+  preload: false,
 });
 
 /**
@@ -66,6 +70,8 @@ const notoSC = Noto_Sans_SC({
   weight: ["400", "500", "700"],
   variable: "--font-noto-sc",
   display: "swap",
+  // Not preloaded, for the same reason as the Arabic face above.
+  preload: false,
 });
 
 /**

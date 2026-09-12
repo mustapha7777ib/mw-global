@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getDictionary, isLocale, localeHref, translator } from "@/lib/i18n";
 import { alternatesFor } from "@/lib/i18n/metadata";
@@ -93,11 +94,13 @@ export default async function CommoditiesPage({
                     {d.commodities.specsHint}
                   </p>
                 ) : null}
-                <div className="mt-8 aspect-4/3 overflow-hidden bg-ink-100">
-                  <img
+                <div className="relative mt-8 aspect-4/3 overflow-hidden bg-ink-100">
+                  <Image
                     src={group.image}
                     alt={tr(group.category)}
-                    className="photo h-full w-full object-cover"
+                    fill
+                    sizes="(min-width: 1024px) 380px, 100vw"
+                    className="photo object-cover"
                   />
                 </div>
               </div>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getDictionary, isLocale, localeHref, translator } from "@/lib/i18n";
 import { alternatesFor } from "@/lib/i18n/metadata";
@@ -64,11 +65,13 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
             </div>
 
             <div className="lg:col-span-5">
-              <div className="aspect-4/5 overflow-hidden bg-ink-100">
-                <img
+              <div className="relative aspect-4/5 overflow-hidden bg-ink-100">
+                <Image
                   src="/images/warehouse-cart.jpg"
                   alt={d.about.warehouseAlt}
-                  className="photo h-full w-full object-cover"
+                  fill
+                  sizes="(min-width: 1024px) 480px, 100vw"
+                  className="photo object-cover"
                 />
               </div>
             </div>
@@ -216,11 +219,13 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
                 label={d.about.approachLabel}
                 title={d.about.approachTitle}
               />
-              <div className="mt-10 aspect-4/3 overflow-hidden bg-ink-100">
-                <img
+              <div className="relative mt-10 aspect-4/3 overflow-hidden bg-ink-100">
+                <Image
                   src="/images/port-cranes.jpg"
                   alt={d.about.portAlt}
-                  className="photo h-full w-full object-cover"
+                  fill
+                  sizes="(min-width: 1024px) 480px, 100vw"
+                  className="photo object-cover"
                 />
               </div>
             </div>

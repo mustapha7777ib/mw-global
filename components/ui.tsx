@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -228,11 +229,16 @@ export function PageHeader({
 }) {
   return (
     <section className="relative isolate overflow-hidden bg-brand-950">
-      <img
+      {/* The masthead is the page's largest paint, so it is the one photo
+          preloaded; every other photo on the page lazy-loads. */}
+      <Image
         src={image}
         alt=""
         aria-hidden="true"
-        className="photo absolute inset-0 h-full w-full object-cover opacity-35"
+        fill
+        preload
+        sizes="100vw"
+        className="photo object-cover opacity-35"
         style={{ objectPosition: position }}
       />
       <div

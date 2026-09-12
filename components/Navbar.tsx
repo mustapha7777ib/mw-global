@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { Logo } from "@/components/Logo";
 import { Container } from "@/components/ui";
 import { contact, nav, site } from "@/lib/site";
@@ -49,6 +49,16 @@ export function Navbar({
     setOpen(false);
     setLangOpen(false);
   }, [pathname]);
+
+  // Closing only once `pathname` changes leaves the menu sitting open for the
+  // whole navigation, which on a phone reads as a tap that did nothing. Close
+  // it on the tap itself instead.
+  function closeOnLinkTap(event: MouseEvent) {
+    if ((event.target as Element).closest("a")) {
+      setOpen(false);
+      setLangOpen(false);
+    }
+  }
 
   // A menu that only closes on its own links strands the keyboard and anyone
   // who clicks elsewhere expecting it to dismiss.
@@ -124,6 +134,7 @@ export function Navbar({
               <ul
                 id="language-menu"
                 hidden={!langOpen}
+                onClick={closeOnLinkTap}
                 className="absolute end-0 top-full mt-2 min-w-32 border border-white/15 bg-ink-950 py-1 shadow-lg"
               >
                 {others.map((l) => (
@@ -212,6 +223,7 @@ export function Navbar({
 
         <div
           id="mobile-menu"
+          onClick={closeOnLinkTap}
           className={`overflow-hidden border-t border-ink-900/10 bg-paper transition-[max-height] duration-300 lg:hidden ${
             open ? "max-h-[34rem]" : "max-h-0"
           }`}

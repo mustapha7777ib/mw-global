@@ -37,12 +37,14 @@ export const site = {
     ar: "استيراد • تصدير • خدمات لوجستية",
     tr: "İthalat • İhracat • Lojistik",
     zh: "进口 • 出口 • 物流",
+    fr: "Import • Export • Logistique",
   } satisfies Text,
   description: {
     en: "M/W Global Services Limited is an international trade company sourcing and shipping agricultural commodities, solid minerals and industrial goods between Africa and world markets.",
     ar: "شركة M/W Global Services Limited شركة تجارة دولية تتولّى توريد وشحن السلع الزراعية والمعادن الصلبة والبضائع الصناعية بين أفريقيا وأسواق العالم.",
     tr: "M/W Global Services Limited; Afrika ile dünya pazarları arasında tarımsal emtia, katı mineraller ve sınai ürünlerin tedarikini ve sevkiyatını yapan bir dış ticaret şirketidir.",
     zh: "M/W Global Services Limited 是一家国际贸易公司，在非洲与全球市场之间采购并运输农产品、固体矿产及工业品。",
+    fr: "M/W Global Services Limited est une société de commerce international qui source et expédie des produits agricoles, des minerais solides et des biens industriels entre l'Afrique et les marchés du monde.",
   } satisfies Text,
   url: "https://mwglobal.org.ng",
 
@@ -56,6 +58,7 @@ export const site = {
     ar: "على مدار الساعة",
     tr: "7/24",
     zh: "全天候",
+    fr: "24h/24, 7j/7",
   } satisfies Text,
 
   // ── Office ──────────────────────────────────────────────────────────────
@@ -63,7 +66,13 @@ export const site = {
   // search engines read. `lines` is derived from it so the address a visitor
   // sees and the address Google indexes can never disagree.
   office: {
-    label: { en: "Office", ar: "المكتب", tr: "Ofis", zh: "办公室" } satisfies Text,
+    label: {
+      en: "Office",
+      ar: "المكتب",
+      tr: "Ofis",
+      zh: "办公室",
+      fr: "Bureau",
+    } satisfies Text,
     postal,
     mapQuery,
     lines: {
@@ -77,6 +86,10 @@ export const site = {
         "Abuja 900108, Federal Başkent Bölgesi",
       ],
       zh: ["2 Emeritus Umaru Shehu Ave", "阿布贾 900108，联邦首都辖区"],
+      fr: [
+        "2 Emeritus Umaru Shehu Ave",
+        "Abuja 900108, Territoire de la Capitale Fédérale",
+      ],
     },
   },
 
@@ -131,6 +144,14 @@ export const site = {
         label: "产品与商品目录 — 2026",
         pages: 15,
         fileSize: "0.8 MB",
+      },
+      fr: {
+        locale: "fr",
+        href: "/downloads/mw-global-catalogue-2026-fr.pdf",
+        downloadAs: "MW-Global-Catalogue-2026-FR.pdf",
+        label: "Catalogue Produits & Matières Premières — 2026",
+        pages: 15,
+        fileSize: "0.7 MB",
       },
     },
   },
@@ -194,12 +215,14 @@ export const certifications: Certification[] = [
       ar: "ترخيص بتصدير البضائع النيجيرية إلى الأسواق الدولية.",
       tr: "Nijerya menşeli ürünlerin uluslararası pazarlara ihracatı için yetki belgesi.",
       zh: "尼日利亚商品出口至国际市场的授权资质。",
+      fr: "Autorisation d'exporter des marchandises nigérianes vers les marchés internationaux.",
     },
     reference: {
       en: "RE 0045048 · valid to 12 August 2028",
       ar: "RE 0045048 · سارٍ حتى 12 أغسطس 2028",
       tr: "RE 0045048 · 12 Ağustos 2028 tarihine kadar geçerli",
       zh: "RE 0045048 · 有效期至 2028 年 8 月 12 日",
+      fr: "RE 0045048 · valable jusqu'au 12 août 2028",
     },
     file: "/certificates/nepc-export-certificate.pdf",
   },
@@ -211,6 +234,7 @@ export const certifications: Certification[] = [
       ar: "المنتجات مطابقة للاشتراطات الإسلامية في الغذاء والتصنيع، وهي مطلوبة لدى المشترين في الشرق الأوسط وأجزاء من آسيا.",
       tr: "Ürünler, Orta Doğu ve Asya'nın bazı bölgelerindeki alıcıların talep ettiği İslami gıda ve üretim standartlarına uygundur.",
       zh: "产品符合伊斯兰饮食与加工标准，中东及部分亚洲市场的买家通常要求此项认证。",
+      fr: "Les produits respectent les normes islamiques alimentaires et de transformation, exigées par les acheteurs du Moyen-Orient et d'une partie de l'Asie.",
     },
   },
   {
@@ -222,6 +246,7 @@ export const certifications: Certification[] = [
       ar: "تسجيل لدى هيئة الجمارك الصينية، وهو شرط لدخول الشحنات الغذائية والزراعية إلى السوق الصينية.",
       tr: "Çin gümrük idaresi nezdinde kayıt — gıda ve tarım sevkiyatlarının Çin pazarına girişi için zorunludur.",
       zh: "中华人民共和国海关总署注册，食品及农产品进入中国市场的必要条件。",
+      fr: "Enregistrement auprès de l'autorité douanière chinoise, requis pour les denrées alimentaires et agricoles entrant sur le marché chinois.",
     },
   },
   {
@@ -232,6 +257,7 @@ export const certifications: Certification[] = [
       ar: "كيان تجاري نيجيري مسجّل قانونياً، تأسّس في 6 أكتوبر 2008.",
       tr: "6 Ekim 2008'de kurulmuş, yasal olarak tescilli Nijerya şirketi.",
       zh: "依法注册的尼日利亚企业实体，成立于 2008 年 10 月 6 日。",
+      fr: "Entité commerciale nigériane légalement immatriculée, constituée le 6 octobre 2008.",
     },
     reference: `RC ${site.rc}`,
     file: "/certificates/cac-certificate-of-incorporation.pdf",

@@ -12,7 +12,7 @@
  * `lib/site.ts` and `lib/content.ts`. Nothing ships half-translated.
  */
 
-export const locales = ["en", "ar", "tr", "zh"] as const;
+export const locales = ["en", "ar", "tr", "zh", "fr"] as const;
 
 export type Locale = (typeof locales)[number];
 
@@ -37,6 +37,7 @@ export const htmlLang: Record<Locale, string> = {
   ar: "ar",
   tr: "tr",
   zh: "zh-Hans",
+  fr: "fr",
 };
 
 /** Open Graph wants language_TERRITORY. */
@@ -45,6 +46,7 @@ export const ogLocale: Record<Locale, string> = {
   ar: "ar_AE",
   tr: "tr_TR",
   zh: "zh_CN",
+  fr: "fr_FR",
 };
 
 /** Native name of each language, for the language menu. */
@@ -53,6 +55,7 @@ export const localeName: Record<Locale, string> = {
   ar: "العربية",
   tr: "Türkçe",
   zh: "中文",
+  fr: "Français",
 };
 
 /**

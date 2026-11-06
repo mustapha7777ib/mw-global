@@ -119,7 +119,7 @@ export const site = {
         downloadAs: "MW-Global-Catalogue-2026.pdf",
         label: "Product & Commodity Catalogue — 2026",
         pages: 15,
-        fileSize: "0.7 MB",
+        fileSize: "0.5 MB",
       },
       ar: {
         locale: "ar",

@@ -49,8 +49,8 @@ export const site = {
   url: "https://mwglobal.org.ng",
 
   // ── Contact ─────────────────────────────────────────────────────────────
-  email: "mwglobal.team@gmail.com",
-  salesEmail: "mwglobal.team@gmail.com",
+  email: "contact@mwglobal.org.ng",
+  salesEmail: "contact@mwglobal.org.ng",
   phone: "+234 911 013 8293",
   whatsapp: "2349056171492", // digits only, country code first
   hours: {
@@ -127,7 +127,7 @@ export const site = {
         downloadAs: "MW-Global-Catalogue-2026-AR.pdf",
         label: "كتالوج المنتجات والسلع — 2026",
         pages: 15,
-        fileSize: "0.2 MB",
+        fileSize: "0.1 MB",
       },
       tr: {
         locale: "tr",

@@ -103,8 +103,9 @@ export async function POST(request: Request) {
     );
   }
 
+  const now = new Date();
   const enquiry = {
-    receivedAt: new Date().toISOString(),
+    receivedAt: now.toISOString(),
     name,
     email,
     company: data.company?.trim() || null,
@@ -127,6 +128,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: FALLBACK_CONTACT }, { status: 503 });
   }
 
+  // The ISO stamp stays in the logged enquiry; the email shows Lagos time,
+  // e.g. "11 Nov 2026, 09:18 WAT".
+  const receivedLocal = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Africa/Lagos",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(now) + " WAT";
+
   const fields: [string, string][] = [
     ["Name", enquiry.name],
     ["Company", enquiry.company ?? "—"],
@@ -142,14 +155,14 @@ export async function POST(request: Request) {
     "Enquiry:",
     enquiry.message,
     "",
-    `Received ${enquiry.receivedAt} via ${siteUrl}/contact`,
+    `Received ${receivedLocal} via ${siteUrl}/contact`,
   ].join("\n");
 
   const html = `
     <div style="font-family:ui-sans-serif,system-ui,sans-serif;color:#0a0b0a;max-width:640px">
       <h2 style="margin:0 0 4px;font-size:18px">New quote enquiry</h2>
       <p style="margin:0 0 20px;color:#5c625d;font-size:13px">
-        ${escapeHtml(site.name)} &middot; ${escapeHtml(enquiry.receivedAt)}
+        ${escapeHtml(site.name)} &middot; ${escapeHtml(receivedLocal)}
       </p>
       <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;font-size:14px">
         ${fields

@@ -179,3 +179,11 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Hide the "Powered by Netlify" badge Netlify injects on free-plan sites.
+   The badge is an iframe with inline styles, so !important is required. */
+#nl-badge-frame,
+#nl-hud-frame,
+iframe[title="Powered by Netlify"] {
+  display: none !important;
+}
